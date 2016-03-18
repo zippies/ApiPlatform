@@ -3,4 +3,4 @@ from flask import Blueprint
 
 url = Blueprint('main',__name__)
 
-from . import apiView,jobView,caseView
+from . import apiView,suitView,caseView

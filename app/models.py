@@ -21,6 +21,13 @@ class Api(db.Model):
         self.reqdata = reqdata
         self.respdata = respdata
 
+    @property
+    def casecount(self):
+        count = 0
+        for case in self.apicases:
+            count += 1
+        return count
+
     def __repr__(self):
         return "<API:%s>" % self.name
 
@@ -35,3 +42,13 @@ class ApiCase(db.Model):
         self.name = name
         self.desc = desc
         self.content = content
+
+class TestSuit(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(32),unique=True)
+    orders = db.Column(db.PickleType)
+    createdtime = db.Column(db.DateTime, default=datetime.now)
+
+    def __init__(self,name,orders):
+        self.name = name
+        self.orders = orders

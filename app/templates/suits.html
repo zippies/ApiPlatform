@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block css_index %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css"/>
+    <style>
+        .title:hover{
+            cursor:pointer;
+            border:1px solid black;
+        }
+        .suilist{
+            padding:10px;
+        }
+        .list-group{
+            margin-left:10px
+        }
+    </style>
+{% endblock %}
+
+{% block nav %}
+    {{ super() }}
+{% endblock %}
+
+{% block jobclass %}
+active
+{% endblock %}
+
+{% block apiclass %}
+{% endblock %}
+
+{% block caseclass %}
+{% endblock %}
+
+
+{% block container%}
+
+<div class="well">
+    <ul class="list-inline">
+        <li><input type="text" id="suitname" class="form-control" placeholder="测试集名称" style="width:200px" required></li>
+        <li>
+            <select name="suitapi_cases" id="choiceapis" multiple="multiple">
+                {% for api in apis %}
+                    {% if api.casecount %}
+                    <optgroup label="{{ api.name }}">
+                        {% for case in api.apicases %}
+                            <option value="{{ case.id }}"> [case] {{ case.name }}</option>
+                        {% endfor %}
+                    </optgroup>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </li>
+        <li><button class="btn btn-primary" id="newsuitbtn">新增测试集</button></li>
+    </ul>
+</div>
+
+
+<div id="suitlist">
+
+</div>
+
+{% endblock %}
+
+{% block script_index %}
+    {{ super() }}
+    <script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+    <script src="/static/js/Sortable.js"></script>
+    <script>
+        $(function(){
+            freshsuits();
+
+            $('#choiceapis').multiselect({
+                enableCollapsibleOptGroups: true,
+                includeSelectAllOption:true,
+                enableFiltering: true,
+                selectAllText: '全部选择',
+                buttonWidth: '400px'
+            });
+
+            $("#newsuitbtn").click(function(){
+                var suitapi_cases = new Array($("#choiceapis").find("option:selected").length);
+                $("option:selected").each(function(i,e){
+                    suitapi_cases[i] = $(e).attr("value")
+                })
+                $.ajax({
+                    url:"/newsuit",
+                    type:"post",
+                    data:{"suitname":$("#suitname").val(),"suitapi_cases":suitapi_cases},
+                    success:function(data){
+                        if(data.result){
+                            layer.msg("新增成功")
+                            freshsuits()
+                        }else{
+                            layer.msg(data.errorMsg)
+                        }
+                    }
+                })
+            })
+
+        })
+
+        function freshsuits(){
+
+            $.ajax({
+                url:"/freshsuits",
+                type:"get",
+                success:function(data){
+                    $("#suitlist").empty().append(data.suits)
+                    data.orders.forEach(function(e){
+                        suit_id = e[0]
+                        apilist = e[1]
+
+                        Sortable.create(document.getElementById("apilist_"+suit_id), {
+                            group: 'suit-'+suit_id,
+                            handle: '.glyphicon-move',
+                            sort:true,
+                            delay: 0,
+                            dataIdAttr: 'api-suit-'+suit_id,
+                            animation: 150,
+                            store: {
+                                get: function (sortable) {
+                                    var order = localStorage.getItem(sortable.options.group);
+                                    return order ? order.split('|') : [];
+                                },
+                                set: function (sortable) {
+                                    var order = sortable.toArray();
+                                    suitid = sortable.options.group.name.substring(5)
+                                    $.ajax({
+                                        url:"/updatesuitorder/"+suitid,
+                                        type:"post",
+                                        data:{"api_order":order},
+                                        success:function(data){
+                                            if(data.result){
+                                                layer.msg("更新成功")
+                                            }else{
+                                                layer.msg("更新排序失败:"+data.errorMsg)
+                                            }
+                                        }
+                                    })
+                                    localStorage.setItem(sortable.options.group, order.join('|'));
+                                }
+                            }
+                        });
+
+                        apilist.forEach(function(api){
+                            Sortable.create(document.getElementById("caselist_suit_"+suit_id+"_api_"+api.id), {
+                                group: 'suit-'+suit_id+'-api-'+api.id,
+                                handle: '.glyphicon-move',
+                                sort:true,
+                                delay: 0,
+                                dataIdAttr: 'api-suit-'+suit_id+'-api-'+api.id,
+                                animation: 150,
+                                store: {
+                                    get: function (sortable) {
+                                        var order = localStorage.getItem(sortable.options.group);
+                                        return order ? order.split('|') : [];
+                                    },
+                                    set: function (sortable) {
+                                        var order = sortable.toArray();
+                                        suitid = sortable.options.group.name.split("-")[1]
+                                        apiid = sortable.options.group.name.split("-")[3]
+                                        $.ajax({
+                                            url:"/updatecaseorder/"+suitid+"/"+apiid,
+                                            type:"post",
+                                            data:{"case_order":order},
+                                            success:function(data){
+                                                if(data.result){
+                                                    layer.msg("更新成功")
+                                                }else{
+                                                    layer.msg("更新排序失败:"+data.errorMsg)
+                                                }
+                                            }
+                                        })
+                                        localStorage.setItem(sortable.options.group, order.join('|'));
+                                    }
+                                }
+                            });
+                        })
+                    })
+                }
+
+
+            })
+        }
+
+        function delsuit(id){
+            layer.confirm('确定要删除吗?',{
+                btn:['确定','取消']
+            },
+            function(){
+                $.ajax({
+                    url:"/delsuit/"+id,
+                    type:"post",
+                    success:function(data){
+                        if(data.result){
+                            $("#suitlist_"+id).remove()
+                            layer.msg("删除成功")
+                        }else{
+                            layer.msg("删除失败:"+data.errorMsg)
+                        }
+                    }
+                })
+            },
+            function(){
+                layer.msg("取消删除")
+            })
+
+        }
+    </script>
+{% endblock %}

@@ -13,5 +13,4 @@ def createApp():
 	db.init_app(app)
 	from .main import url as BluePrint
 	app.register_blueprint(BluePrint)
-
 	return(app)
