@@ -5,7 +5,6 @@
 /* HTML document is loaded. DOM is ready. 
 -----------------------------------------*/
 $(document).ready(function(){
-
 	/* Mobile menu */
 	$('.mobile-menu-icon').click(function(){
 		$('.templatemo-left-nav').slideToggle();				

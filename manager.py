@@ -4,6 +4,7 @@ from app.models import *
 from flask.ext.script import Manager,Shell
 from flask.ext.migrate import Migrate,MigrateCommand
 from werkzeug.contrib.fixers import ProxyFix
+import os
 
 app = createApp()
 app.debug = True
@@ -23,4 +24,6 @@ def dbdrop():
 	print('ok')
 
 if __name__ == '__main__':
+	if not os.path.isdir("logs"):
+		os.mkdir("logs")
 	manager.run()

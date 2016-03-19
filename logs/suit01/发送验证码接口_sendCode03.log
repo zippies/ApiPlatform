@@ -1,0 +1,110 @@
+[INFO] 2016-03-19 17:08:21,895 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:08:21,896 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:08:21,896 [返回码]:404  响应时间:0.04
+[INFO] 2016-03-19 17:08:21,896 [返回内容]:
+[INFO] 2016-03-19 17:08:21,896     {'body': {'errorDescription': 'uri来源错误', 'errorCode': '50101', 'error': 'http uri source error'}, 'rqid': '3-26-63b8c139-ad0b-4576-9a6f-eca65f301ea5', 'result': 0}
+[INFO] 2016-03-19 17:08:21,896 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:08:21,897 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:08:21,897 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:08:21,897 [failed] returncode == 200
+[INFO] 2016-03-19 17:08:21,897 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:10:08,296 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:10:08,296 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:10:08,296 [返回码]:404  响应时间:0.03
+[INFO] 2016-03-19 17:10:08,297 [返回内容]:
+[INFO] 2016-03-19 17:10:08,297     {'result': 0, 'body': {'errorDescription': 'uri来源错误', 'errorCode': '50101', 'error': 'http uri source error'}, 'rqid': '3-26-a00dd7f9-4794-4838-ad60-2b5cc4ccf287'}
+[INFO] 2016-03-19 17:10:08,298 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:10:08,298 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:10:08,298 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:10:08,298 [failed] returncode == 200
+[INFO] 2016-03-19 17:10:08,298 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:10:34,472 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:10:34,473 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:10:34,473 [返回码]:404  响应时间:0.03
+[INFO] 2016-03-19 17:10:34,473 [返回内容]:
+[INFO] 2016-03-19 17:10:34,473     {'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}, 'result': 0, 'rqid': '3-26-23bd4f93-5bf7-46ed-9b13-ba979a73b3b3'}
+[INFO] 2016-03-19 17:10:34,473 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:10:34,473 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:10:34,473 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:10:34,473 [failed] returncode == 200
+[INFO] 2016-03-19 17:10:34,473 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:11:43,173 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:11:43,173 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:11:43,173 [返回码]:404  响应时间:0.49
+[INFO] 2016-03-19 17:11:43,174 [返回内容]:
+[INFO] 2016-03-19 17:11:43,174     {'rqid': '3-26-ddc1684d-c6c2-4a33-a145-c3c3df54d5d9', 'body': {'error': 'http uri source error', 'errorDescription': 'uri来源错误', 'errorCode': '50101'}, 'result': 0}
+[INFO] 2016-03-19 17:11:43,174 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:11:43,175 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:11:43,175 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:11:43,175 [failed] returncode == 200
+[INFO] 2016-03-19 17:11:43,175 [failed] elapsed < 0.1
+[INFO] 2016-03-19 17:12:28,638 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:12:28,639 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:12:28,639 [返回码]:404  响应时间:0.1
+[INFO] 2016-03-19 17:12:28,639 [返回内容]:
+[INFO] 2016-03-19 17:12:28,639     {'rqid': '3-26-dad5215d-f717-4e2a-ac1e-84cb95ececc0', 'body': {'errorCode': '50101', 'errorDescription': 'uri来源错误', 'error': 'http uri source error'}, 'result': 0}
+[INFO] 2016-03-19 17:12:28,640 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:12:28,640 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:12:28,640 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:12:28,641 [failed] returncode == 200
+[INFO] 2016-03-19 17:12:28,641 [failed] elapsed < 0.1
+[INFO] 2016-03-19 17:17:09,234 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:17:09,234 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:17:09,234 [返回码]:404  响应时间:0.03
+[INFO] 2016-03-19 17:17:09,235 [返回内容]:
+[INFO] 2016-03-19 17:17:09,235     {'rqid': '3-26-df4b4e95-2716-4d42-9cf0-d6626faee0f3', 'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}}
+[INFO] 2016-03-19 17:17:09,235 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:17:09,235 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:17:09,235 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:17:09,235 [failed] returncode == 200
+[INFO] 2016-03-19 17:17:09,235 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:19:14,325 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:19:14,326 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:19:14,326 [返回码]:404  响应时间:0.03
+[INFO] 2016-03-19 17:19:14,326 [返回内容]:
+[INFO] 2016-03-19 17:19:14,326     {'rqid': '3-26-85c4047f-289b-4faa-80a3-1402d70b9522', 'body': {'errorCode': '50101', 'error': 'http uri source error', 'errorDescription': 'uri来源错误'}, 'result': 0}
+[INFO] 2016-03-19 17:19:14,326 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:19:14,326 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:19:14,327 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:19:14,327 [failed] returncode == 200
+[INFO] 2016-03-19 17:19:14,327 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:19:27,649 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:19:27,650 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:19:27,650 [返回码]:404  响应时间:0.03
+[INFO] 2016-03-19 17:19:27,650 [返回内容]:
+[INFO] 2016-03-19 17:19:27,650     {'result': 0, 'body': {'error': 'http uri source error', 'errorDescription': 'uri来源错误', 'errorCode': '50101'}, 'rqid': '3-26-e41941aa-e5eb-4d62-9320-daea57bb9087'}
+[INFO] 2016-03-19 17:19:27,650 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:19:27,650 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:19:27,650 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:19:27,650 [failed] returncode == 200
+[INFO] 2016-03-19 17:19:27,650 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:19:43,589 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:19:43,589 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:19:43,589 [返回码]:404  响应时间:0.03
+[INFO] 2016-03-19 17:19:43,590 [返回内容]:
+[INFO] 2016-03-19 17:19:43,590     {'rqid': '3-26-611dce31-e658-4174-81eb-23633c1ff9af', 'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}}
+[INFO] 2016-03-19 17:19:43,590 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:19:43,590 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:19:43,591 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:19:43,591 [failed] returncode == 200
+[INFO] 2016-03-19 17:19:43,591 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:21:45,078 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:21:45,078 ------------------------------以下为请求信息------------------------------
+[INFO] 2016-03-19 17:21:45,079 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:21:45,079 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+[INFO] 2016-03-19 17:21:45,079 [返回码]:404  响应时间:0.04
+[INFO] 2016-03-19 17:21:45,079 [返回码]:404  响应时间:0.04
+[INFO] 2016-03-19 17:21:45,079 [返回内容]:
+[INFO] 2016-03-19 17:21:45,079 [返回内容]:
+[INFO] 2016-03-19 17:21:45,079     {'rqid': '3-26-b5deda4f-fafe-457b-852a-81d9cdb0ff50', 'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}}
+[INFO] 2016-03-19 17:21:45,079     {'rqid': '3-26-b5deda4f-fafe-457b-852a-81d9cdb0ff50', 'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}}
+[INFO] 2016-03-19 17:21:45,079 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:21:45,079 ----------------------------以下为[print]信息----------------------------
+[INFO] 2016-03-19 17:21:45,080 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:21:45,080 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+[INFO] 2016-03-19 17:21:45,080 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:21:45,080 ----------------------------以下为[check]信息----------------------------
+[INFO] 2016-03-19 17:21:45,080 [failed] returncode == 200
+[INFO] 2016-03-19 17:21:45,080 [failed] returncode == 200
+[INFO] 2016-03-19 17:21:45,080 [success] elapsed < 0.1
+[INFO] 2016-03-19 17:21:45,080 [success] elapsed < 0.1

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from flask import render_template,request,jsonify
+from .framework.main import send_request,CheckError,case_template,parseScript
+from .framework.logger import Logger
 from ..models import  db,Api,ApiCase,TestSuit
 from jinja2 import Template
 from . import url
-import json
 
 @url.route("/")
 @url.route("/index")
@@ -34,7 +35,9 @@ def newsuit():
                 else:
                     continue
         if orders:
-            suit = TestSuit(suitname,orders)
+            suit = TestSuit()
+            suit.name = suitname
+            suit.orders = orders
             db.session.add(suit)
             db.session.commit()
         else:
@@ -86,7 +89,7 @@ def freshsuits():
     s = Template(suit_template).render(
         suits = suits
     )
-    print(s)
+
     data["suits"] = s
     data["orders"] = [[suit.id,suit.orders] for suit in suits]
 
@@ -166,10 +169,48 @@ def runsuit(id):
             api = Api.query.filter_by(id=int(apiitem["id"])).first()
             if api:
                 for caseitem in apiitem["cases"]:
-                    testcases.append([api.name,caseitem["name"]])
+                    case = ApiCase.query.filter_by(id=int(caseitem["id"])).first()
+
+                    testcases.append({
+                        "api":api,
+                        "case_name":case.name,
+                        "case_desc":case.desc,
+                        "case_content":case.content
+                    })
             else:
                 pass
     else:
         info = {"result":False,"errorMsg":"该测试集不存在或已被删除"}
-    print(testcases)
+
+    suit.status = 1
+    db.session.add(suit)
+    db.session.commit()
+    print(11111,suit.status)
+    for case in testcases:
+        actionParser = parseScript(case["case_content"])
+        c = Template(case_template).render(
+            beforeAction = actionParser.beforeAction,
+            afterAction = actionParser.actions,
+            printActions = actionParser.printActions,
+            api = case["api"],
+            case = case,
+            checkActions = actionParser.checkActions,
+            purpose = "runsuit",
+            suit=suit
+        )
+        try:
+            exec(c)
+        except Exception as e:
+            info = {"result":False,"errorMsg":"执行用例:%s 出错:"%(case["case_name"],str(e))}
+            return jsonify(info)
+
+    suit.result["total"] = len(testcases)
+    from pprint import pprint
+
+    suit = TestSuit(id=suit.id,status=2,result=suit.result)
+    db.session.merge(suit)
+    db.session.commit()
+
+    pprint(suit.result)
+    print(suit.status)
     return jsonify(info)

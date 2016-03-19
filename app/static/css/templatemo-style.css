@@ -195,7 +195,7 @@ footer { padding: 15px; }
 /* Main Content Area */
 .templatemo-content {
   margin-top: 0px;
-  #min-height: 800px;
+  min-height: 600px;
   padding: 0;
   overflow-x: hidden;
 }

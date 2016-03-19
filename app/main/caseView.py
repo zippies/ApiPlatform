@@ -1,39 +1,9 @@
 # -*- coding: utf-8 -*-
 from flask import render_template,request,jsonify,session
-from .framework.main import support_methods,send_request,CheckError
+from .framework.main import send_request,CheckError,case_template,parseScript
 from ..models import db,Api,ApiCase
 from jinja2 import Template
 from . import url
-import json
-
-case_template = """
-headers = {}
-data = {}
-timeout = (10,15)
-{% for si in setItems %}
-{{ si }}{% endfor %}
-
-response = send_request('{{api.name}}',url='{{api.url}}',method='{{api.type}}',data=data,headers=headers,timeout=timeout)
-
-{% if purpose == 'run' %}
-session["result"]["messages"].append("-"*30+"以下为请求信息"+"-"*30)
-session["result"]["messages"].append("[请求]{{api.name}}:{{api.url}} {{api.type}}")
-session["result"]["messages"].append("[返回码]:%s" %response.returncode)
-session["result"]["messages"].append("[返回内容]:")
-session["result"]["messages"].append("    "+str(response.data))
-session["result"]["messages"].append("-"*28+"以下为[print]信息"+"-"*28)
-{% else %}{% endif %}
-
-{% for ac in actions %}{{ ac }}{% endfor %}
-
-{% if purpose == 'run' %}session["result"]["messages"].append("-"*28+"以下为[check]信息"+"-"*28){% else %}{% endif %}
-
-{% for ci in checkItems %}if not {{ ci }}:
-    session["result"]["failedChecks"].append("[failed] {{ ci }}")
-else:
-    session["result"]["successChecks"].append("[success]{{ ci }}")
-{% endfor %}
-"""
 
 caseitem_template = """
 {% for case,api in case_api %}
@@ -57,10 +27,12 @@ def cases():
     }
     apis = Api.query.all()
     cases = ApiCase.query.all()
-    return render_template("cases.html",apis=apis,cases=cases,support_methods=support_methods)
+    return render_template("cases.html",apis=apis,cases=cases)
 
 @url.route("/sendcaserequest",methods=["POST"])
 def sendcaserequest():
+    import time
+
     session["result"] = {
         "messages":[],
         "successChecks":[],
@@ -75,27 +47,17 @@ def sendcaserequest():
     purpose = request.form.get("purpose")
 
     if purpose == "run":
-        setItems, actions, checkItems = [], [], []
-        scripts = [s for s in script.split("\n") if s.strip()]
-        for script in scripts:
-            if script.strip().startswith("[set]"):
-                setItems.append(script[5:].strip())
-            elif script.strip().startswith("[check]"):
-                checkItems.append(script.strip()[7:].replace("\"", "'").strip())
-            elif script.strip().startswith("[print]"):
-                if "response" in script:
-                    actions.append("session['result']['messages'].append(str(" + script.strip()[7:].strip() + "))\r\n")
-                elif script.strip()[7:].strip():
-                    actions.append("session['result']['messages'].append('" + script.strip()[7:].strip() + "')\r\n")
-            else:
-                actions.append(script)
+        actionParser = parseScript(script)
+
         case = Template(case_template).render(
-            setItems=setItems,
-            actions=actions,
-            api=api,
-            checkItems=checkItems,
-            purpose=purpose
+            beforeAction = actionParser.beforeAction,
+            afterAction = actionParser.actions,
+            printActions = actionParser.printActions,
+            api = api,
+            checkActions = actionParser.checkActions,
+            purpose = purpose
         )
+
         try:
             exec(case)
         except Exception as e:
@@ -140,6 +102,7 @@ def sendcaserequest():
             info["errorMsg"] = "数据库异常"
     else:
         info = {"result":False,"errorMsg":"不支持的请求！"}
+
     return jsonify(info)
 
 @url.route("/freshcasetable")

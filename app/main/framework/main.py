@@ -3,6 +3,105 @@ from collections import OrderedDict,namedtuple
 from . import web_apidoc
 import json,requests
 
+case_template = \
+"""
+{% if suit %}
+logger = Logger('{{suit.name}}/{{api.name}}_{{ case.case_name }}')
+info = {
+    "name":'{{ case.case_name }}',
+    "desc":'{{ case.case_desc }}',
+    "logpath":'{{ suit.name }}/{{ api.name }}_{{ case.case_name }}.log',
+    "passCheck":[],
+    "failCheck":[]
+}
+ispass = True
+{% endif %}
+headers = {}
+data = {}
+timeout = (10,15)
+
+{{ beforeAction }}
+
+response = send_request('{{api.name}}',url='{{api.url}}',method='{{api.type}}',data=data,headers=headers,timeout=timeout)
+
+{% if purpose == 'run' %}
+session["result"]["messages"].append("-"*30+"以下为请求信息"+"-"*30)
+session["result"]["messages"].append("[请求]{{api.name}}:{{api.url}} {{api.type}}")
+session["result"]["messages"].append("[返回码]:%s  响应时间:%s" %(response.returncode,response.elapsed))
+session["result"]["messages"].append("[返回内容]:")
+session["result"]["messages"].append("    "+str(response.data))
+session["result"]["messages"].append("-"*28+"以下为[print]信息"+"-"*28)
+{% elif purpose == 'runsuit' %}
+logger.log("-"*30+"以下为请求信息"+"-"*30)
+logger.log("[请求]{{api.name}}:{{api.url}} {{api.type}}")
+logger.log("[返回码]:%s  响应时间:%s" %(response.returncode,response.elapsed))
+logger.log("[返回内容]:")
+logger.log("    "+str(response.data))
+logger.log("-"*28+"以下为[print]信息"+"-"*28)
+{% else %}
+{% endif %}
+
+{{ afterAction }}
+
+{% for action in printActions %}
+{% if purpose == 'run' %}
+try:
+    session["result"]["messages"].append({{action}})
+except Exception as e:
+    session["result"]["messages"].append(str(e))
+{% elif purpose == 'runsuit' %}
+logger.log({{action}})
+{% endif %}
+{% endfor %}
+
+
+{% if purpose == 'run' %}
+session["result"]["messages"].append("-"*28+"以下为[check]信息"+"-"*28)
+{% elif purpose == 'runsuit' %}
+logger.log("-"*28+"以下为[check]信息"+"-"*28)
+{% else %}
+{% endif %}
+
+{% for ca in checkActions %}
+if not {{ ca }}:{% if purpose == 'run' %}
+    session["result"]["failedChecks"].append("[failed] {{ ca }}")
+else:
+    session["result"]["successChecks"].append("[success]{{ ca }}")
+{% elif purpose == 'runsuit' %}
+    ispass = False
+    info["failCheck"].append("[failed] {{ ca }}")
+    logger.log("[failed] {{ ca }}")
+else:
+    info["passCheck"].append("[success] {{ ca }}")
+    logger.log("[success] {{ ca }}")
+{% endif %}
+{% endfor %}
+
+{% if suit %}
+if ispass:
+    suit.result["success"].append(info)
+else:
+    suit.result["failed"].append(info)
+{% endif %}
+"""
+
+def parseScript(script):
+    sp1 = script.split("[check]")
+    checkActions = [line.replace("\"", "'").strip() for line in sp1[1].strip().split("\n") if line.strip()]
+    sp2 = sp1[0].split("[after]")
+    actions, printActions = [], []
+    for action in sp2[1].strip().split("\n"):
+        if action.strip().startswith("print(") and action.strip().endswith(")"):
+            printActions.append(action.split("print")[1].strip())
+        else:
+            if action.strip():
+                actions.append(action)
+
+    beforeAction = sp2[0].split("[before]")[1].strip()
+    actionParser = namedtuple("actionParser","beforeAction actions printActions checkActions")
+    return actionParser(beforeAction,'\n'.join(actions),printActions,checkActions)
+
+
 class CheckError(Exception):
 	def __init__(self,info):
 		self.info = info

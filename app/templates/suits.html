@@ -37,8 +37,8 @@ active
 <div class="well">
     <ul class="list-inline">
         <li><input type="text" id="suitname" class="form-control" placeholder="测试集名称" style="width:200px" required></li>
-        <li>
-            <select name="suitapi_cases" id="choiceapis" multiple="multiple">
+        <li style="width:300px">
+            <select name="suitapi_cases" id="choiceapis" multiple="multiple" style="display:none">
                 {% for api in apis %}
                     {% if api.casecount %}
                     <optgroup label="{{ api.name }}">
@@ -67,14 +67,15 @@ active
     <script src="/static/js/Sortable.js"></script>
     <script>
         $(function(){
+            layer.load(2);
             freshsuits();
 
             $('#choiceapis').multiselect({
                 enableCollapsibleOptGroups: true,
-                includeSelectAllOption:true,
                 enableFiltering: true,
+                includeSelectAllOption:true,
                 selectAllText: '全部选择',
-                buttonWidth: '400px'
+                buttonWidth: '300px'
             });
 
             $("#newsuitbtn").click(function(){
@@ -104,6 +105,7 @@ active
                 url:"/freshsuits",
                 type:"get",
                 success:function(data){
+                    layer.closeAll('loading');
                     $("#suitlist").empty().append(data.suits)
                     data.orders.forEach(function(e){
                         suit_id = e[0]
