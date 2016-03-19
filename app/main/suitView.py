@@ -34,7 +34,7 @@ def newsuit():
                 else:
                     continue
         if orders:
-            suit = TestSuit(suitname,json.dumps(orders))
+            suit = TestSuit(suitname,orders)
             db.session.add(suit)
             db.session.commit()
         else:
@@ -50,7 +50,7 @@ suit_template = \
     测试集:<a href="javascript:void(0)">{{suit.name}}</a>
     <div class="well">
         <div id="apilist_{{ suit.id }}" class="list-group">
-        {% for api in orders[suit.id] %}
+        {% for api in suit.orders %}
             <div api-suit-{{suit.id}}="{{api.id}}" class="list-group-item">
                 <span class="badge">{{ api.cases|length }}</span>
                 <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
@@ -82,17 +82,13 @@ suit_template = \
 def freshsuits():
     data = {"suits":None,"orders":None}
     suits = TestSuit.query.all()
-    orders = {}
-    for suit in suits:
-        orders[suit.id] = json.loads(suit.orders)
 
     s = Template(suit_template).render(
-        suits = suits,
-        orders = orders
+        suits = suits
     )
-
+    print(s)
     data["suits"] = s
-    data["orders"] = [[suit.id,json.loads(suit.orders)] for suit in suits]
+    data["orders"] = [[suit.id,suit.orders] for suit in suits]
 
     return jsonify(data)
 
@@ -125,9 +121,10 @@ def updatesuitorder(suitid):
         suit = TestSuit.query.filter_by(id=suitid).first()
         if suit:
             for apiid in order:
-                neworder.append(getitemfromorders(apiid,json.loads(suit.orders)))
-            suit.orders = json.dumps(neworder)
-            db.session.add(suit)
+                neworder.append(getitemfromorders(apiid,suit.orders))
+
+            suit = TestSuit(id=suitid, orders=neworder)
+            db.session.merge(suit)
             db.session.commit()
         else:
             info = {"result":False,"errorMsg":"该测试集不存在或已被删除"}
@@ -142,7 +139,7 @@ def updatecaseorder(suitid,apiid):
     suit = TestSuit.query.filter_by(id=suitid).first()
     neworder = []
     if suit:
-        for item in json.loads(suit.orders):
+        for item in suit.orders:
             if item["id"] == apiid:
                 newcases = []
                 for caseid in caseorder:
@@ -152,8 +149,8 @@ def updatecaseorder(suitid,apiid):
             else:
                 neworder.append(item)
 
-        suit.orders = json.dumps(neworder)
-        db.session.add(suit)
+        suit = TestSuit(id=suitid, orders=neworder)
+        db.session.merge(suit)
         db.session.commit()
     else:
         info = {"result":False,"errorMsg":"该测试集不存在或已被删除"}
@@ -165,7 +162,7 @@ def runsuit(id):
     suit = TestSuit.query.filter_by(id=id).first()
     testcases = []
     if suit:
-        for apiitem in json.loads(suit.orders):
+        for apiitem in suit.orders:
             api = Api.query.filter_by(id=int(apiitem["id"])).first()
             if api:
                 for caseitem in apiitem["cases"]:
