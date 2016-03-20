@@ -4,7 +4,7 @@ from config import Config
 
 class Logger(object):
     def __init__(self,name):
-        self.format = '%(asctime)s %(message)s'
+        self.format = '%(message)s'
         fm = logging.Formatter(self.format)
         logging.basicConfig(
             level=logging.DEBUG,

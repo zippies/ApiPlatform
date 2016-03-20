@@ -31,7 +31,7 @@ active
 {% block container%}
 <!-- newcasepanel begin -->
 <div class="row rowitem">
-    <div class="col-lg-9">
+    <div class="col-lg-8">
         <div>
             <ul class="list-inline">
                 <li>
@@ -39,7 +39,7 @@ active
                 </li>
                 <li>
                     <select id="apiselect" class="form-control">
-                        <option value="0">请选择接口</option>
+                        <option value="0" selected="selected">请选择接口</option>
                         {% for api in apis %}
                             <option value="{{ api.id }}">{{ api.name }}</option>
                         {% endfor %}
@@ -49,22 +49,34 @@ active
         </div>
         <div class="rowitem">
             <ul class="list-inline">
+                <li><label>用例名称:</label></li>
                 <li><input type="text" id="casename" class="form-control" placeholder="用例名称"></li>
+                <li><label>检查点描述:</label></li>
                 <li><input type="text" id="casedesc" class="form-control" placeholder="检查点描述"></li>
-                <li><a href="javascript:;" name="run" onclick="sendrequest(this.name)" class="btn btn-primary">运行</a></li>
-                <li><a href="javascript:;" name="save" id="save" onclick="sendrequest(this.name)" class="btn btn-warning">保存</a></li>
+                <li><a href="javascript:;" name="run" onclick="sendrequest(this.name)" class="btn btn-info">运行</a></li>
+                <li><a href="javascript:;" name="save" id="save" onclick="sendrequest(this.name)" class="btn btn-info">保存</a></li>
             </ul>
         </div>
         <div class="rowitem">测试脚本：</div>
         <div class="rowitem">
-            <textarea id="testscriptarea" style="height:300px;width:100%"></textarea>
+            <textarea id="testscriptarea" style="height:300px;width:100%">[before]
+headers = {}
+data = {}
+
+[after]
+
+[check]
+response.returncode == 200
+response.elapsed < 0.1
+</textarea>
             <script>
                 var scriptmirror = CodeMirror.fromTextArea(document.getElementById('testscriptarea'),{
                     indentUnit: 4,
                     lineNumbers: true,
                     smartIndent: true,
                     lineWrapping:true,
-                    mode: "python"
+                    mode: "python",
+                    theme:"monokai"
                 })
                 scriptmirror.setSize("100%","300px")
                 scriptmirror.focus()
@@ -88,8 +100,7 @@ active
         </div>
     </div>
 
-    <div class="col-lg-3" style="padding:5px;min-height:200px;max-height:500px;overflow:scroll">
-        <div style="text-align:center"><button class="btn btn-info" id="newcase">新增用例</button></div>
+    <div class="col-lg-4" style="padding:5px;min-height:200px;max-height:800px;overflow:scroll">
 <!-- allcasepanel begin-->
         <table class="table table-striped">
             <thead>
@@ -116,27 +127,11 @@ active
         $(function(){
             freshcasetable()
 
-            sessionStorage.operation = "new"
-
-            if(sessionStorage.operation != 'edit'){
-                layer.tips('当前模式:新增用例', '#apiselect');
-            }
-
-            $(this).find("option[value="+sessionStorage.testapi_id+"]").attr("selected",true)
+            //$(this).find("option[value="+sessionStorage.testapi_id+"]").attr("selected",true)
 
             $("#apiselect").change(function(){
                 api_id = $(this).find("option:selected").attr("value")
                 sessionStorage.testapi_id = api_id
-            })
-
-            $("#newcase").click(function(){
-                $("#apiselect").removeAttr("disabled").focus()
-                $(document).find("option[value=0]").attr("selected",true)
-                $("#casename").val("")
-                $("#casedesc").val("")
-                scriptmirror.setValue("")
-                sessionStorage.operation = "new"
-                layer.tips('当前模式:新增用例', '#apiselect');
             })
         })
 
@@ -233,17 +228,24 @@ active
         }
 
         function editcase(caseid){
-            sessionStorage.operation = "edit"
+            $("#caseitem_"+sessionStorage.editcaseid).removeClass("warning")
             sessionStorage.editcaseid = caseid
             $("#save").attr("name","edit")
+            $("#caseitem_"+caseid).addClass("warning")
             $.ajax({
                 url:"/getcaseinfo/"+caseid,
                 type:"get",
+                async:true,
                 success:function(data){
                     if(data.result){
-                        layer.tips('当前模式:编辑用例'+data.name, '#apiselect');
+                        if(parseInt(sessionStorage.testapi_id) != parseInt(data.api_id)){
+                            ele = $(document).find("option[value="+sessionStorage.testapi_id+"]")
+                            ele.replaceWith("<option value="+sessionStorage.testapi_id+">"+ele.html()+"</option>")
+                            $(document).find("option[value="+data.api_id+"]").attr("selected","selected")
+                        }else{
+                            console.log(1111,parseInt(sessionStorage.testapi_id),data.api_id)
+                        }
                         $("#apiselect").attr("disabled","disabled")
-                        $(document).find("option[value="+data.api_id+"]").attr("selected",true)
                         $("#casename").val(data.name)
                         $("#casedesc").val(data.desc)
                         scriptmirror.setValue(data.content)

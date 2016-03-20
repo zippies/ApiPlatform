@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict,namedtuple
 from . import web_apidoc
-import json,requests
+import json,requests,time
 
 case_template = \
 """
 {% if suit %}
-logger = Logger('{{suit.name }}/{{ timenow }}/{{api.name}}_{{ case.case_name }}')
+logger = Logger('{{suit.name }}/{{ timenow }}/{{api.name}}_{{ case.case_name }}_{{currentCount}}')
 info = {
     "name":'{{ case.case_name }}',
     "desc":'{{ case.case_desc }}',
     "apiname":'{{ api.name }}',
-    "logpath":'{{ suit.name }}/{{ timenow }}/{{ api.name }}_{{ case.case_name }}.log',
+    "logpath":'{{ suit.name }}/{{ timenow }}/{{ api.name }}_{{ case.case_name }}_{{currentCount}}.log',
     "status":0,
     "passCheck":[],
     "failCheck":[]
 }
+
 {% endif %}
 headers = {}
 data = {}
@@ -47,11 +48,17 @@ logger.log("-"*28+"以下为[print]信息"+"-"*28)
 {% for action in printActions %}
 {% if purpose == 'run' %}
 try:
-    session["result"]["messages"].append({{action}})
+    if isinstance({{action}},int) or isinstance({{action}},str) or isinstance({{action}},dict) or isinstance({{action}},list):
+        session["result"]["messages"].append({{action}})
+    else:
+        session["result"]["messages"].append(str({{action}}))
 except Exception as e:
     session["result"]["messages"].append(str(e))
 {% elif purpose == 'runsuit' %}
-logger.log({{action}})
+try:
+    logger.log({{action}})
+except:
+    logger.log(str({{action}}))
 {% endif %}
 {% endfor %}
 
@@ -64,23 +71,33 @@ logger.log("-"*28+"以下为[check]信息"+"-"*28)
 {% endif %}
 
 {% for ca in checkActions %}
-if not {{ ca }}:{% if purpose == 'run' %}
-    session["result"]["failedChecks"].append("[failed] {{ ca }}")
-else:
-    session["result"]["successChecks"].append("[success]{{ ca }}")
+{% if purpose == 'run' %}
+try:
+    if not {{ ca }}:
+        session["result"]["failedChecks"].append("[failed] {{ ca }}")
+    else:
+        session["result"]["successChecks"].append("[success]{{ ca }}")
+except Exception as e:
+    session["result"]["failedChecks"].append("[failed] %s" %str(e))
 {% elif purpose == 'runsuit' %}
+try:
+    if not {{ ca }}:
+        info["status"] = -1
+        info["failCheck"].append("[failed] {{ ca }}")
+        logger.log("[failed] {{ ca }}")
+    else:
+        info["passCheck"].append("[success] {{ ca }}")
+        logger.log("[success] {{ ca }}")
+except Exception as e:
     info["status"] = -1
-    info["failCheck"].append("[failed] {{ ca }}")
-    logger.log("[failed] {{ ca }}")
-else:
-    info["passCheck"].append("[success] {{ ca }}")
-    logger.log("[success] {{ ca }}")
+    info["failCheck"].append("[failed] %s" %str(e))
+    logger.log("[failed] %s" %str(e))
 {% endif %}
 {% endfor %}
 
 {% if suit %}
 
-suit.result["details"].append(info)
+suit.result["details"][{{currentCount}}].append(info)
 
 {% endif %}
 """
@@ -109,20 +126,6 @@ class CheckError(Exception):
 	def __str__(self):
 		return self.info
 
-support_methodlist = [
-    ("设置headers","headers = {}"),
-    ("设置超时时间","timeout = (2,5)"),
-    ("发送请求","send_request('login',data=data)"),
-    ("设置headers1", "headers = {}"),
-    ("设置超时时间2", "timeout = (2,5)"),
-    ("发送请求3", "send_request('login',data=data)")
-]
-
-support_methods = OrderedDict()
-
-for item in support_methodlist:
-    support_methods[item[0]] = item[1]
-
 class EmptyObj(object):
     def __init__(self):
         pass
@@ -135,8 +138,12 @@ class ResponseObj(object):
         self.success = resp.ok
         self.headers = resp.headers
         self.cookies = resp.cookies
-        self.elapsed = round(resp.elapsed.microseconds/1000000,2)
+        try:
+            self.elapsed = round(resp.elapsed.microseconds/1000000,2)
+        except:
+            self.elapsed = round(resp.elapsed,2)
         self.returncode = resp.status_code
+
         if resp.ok:
             self.errorMsg = None
             try:
@@ -209,11 +216,30 @@ def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=No
         api = eval("apis.%s" %api_name)
         url = api.url
         method = api.type
-
     if method.lower() == "post":
-        resp = requests.post(url,data=data,headers=headers,timeout=timeout)
+        start = time.time()
+        try:
+            resp = requests.post(url,data=data,headers=headers,timeout=timeout)
+        except requests.exceptions.ChunkedEncodingError:
+            elapsed = time.time() - start
+            fakeresp = namedtuple("fakeresp","ok headers cookies status_code elapsed text")
+            resp = fakeresp(ok=True,headers={},cookies={},status_code=200,elapsed=elapsed,text="接口无返回")
+        except Exception as e:
+            elapsed = time.time() - start
+            fakeresp = namedtuple("fakeresp", "ok headers cookies status_code elapsed text")
+            resp = fakeresp(ok=False, headers={}, cookies={}, status_code=1001, elapsed=elapsed, text=str(e))
     elif method.lower() == "get":
-        resp = requests.get(url,data=data,headers=headers,timeout=timeout)
+        start = time.time()
+        try:
+            resp = requests.get(url,params=data,headers=headers,timeout=timeout)
+        except requests.exceptions.ChunkedEncodingError:
+            elapsed = time.time() - start
+            fakeresp = namedtuple("fakeresp", "ok headers cookies status_code elapsed text")
+            resp = fakeresp(ok=True, headers={}, cookies={}, status_code=200, elapsed=elapsed, text="接口无返回")
+        except Exception as e:
+            elapsed = time.time() - start
+            fakeresp = namedtuple("fakeresp", "ok headers cookies status_code elapsed text")
+            resp = fakeresp(ok=False, headers={}, cookies={}, status_code=1001, elapsed=elapsed, text=str(e))
     else:
         print("unsupport method:",method)
         exit(-1)

@@ -211,10 +211,12 @@ active
         }
 
         function runsuit(id){
+            var count = $("#runcount_"+id).val()
             var $btn = $("#runsuit_"+id).button('loading')
             $("#result_"+id).empty()
             $.ajax({
                 url:"/runsuit/"+id,
+                data:{"count":count},
                 success:function(data){
                     if(data.result){
                         console.log(data.info)
@@ -231,11 +233,11 @@ active
         function showlog(casename,logpath){
             width = document.body.clientWidth * 0.7
             height = document.body.clientHeight * 0.6
-            console.log(width,height)
+            console.log(logpath)
             layer.open({
                 type: 2,
                 title: "用例名："+casename,
-                area: [width+"px", height+"px"],
+                area: [width+"px", "600px"],
                 shadeClose: true, //开启遮罩关闭
                 content: '/showlog?logpath='+logpath
             });

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from .framework.main import apilist,send_request,support_methods
+from .framework.main import apilist,send_request
+from .framework.methods import *
 from flask import render_template,request,jsonify
 from ..models import db,Api
 from . import url
@@ -106,7 +107,6 @@ def saveapi():
     except Exception as e:
         info = {"result":False,"errorMsg":str(e)}
     finally:
-        #print(name,url,method,reqdata,respdata,reqheader,respheader)
         return jsonify(info)
 
 @url.route("/editapi/<int:id>",methods=["POST"])
@@ -141,56 +141,3 @@ def delapi(id):
         info = {"result":False,"errorMsg":"该接口不存在或已被删除"}
 
     return jsonify(info)
-
-# data = {
-#     "cellphone":18516042356,
-#     "password":"6547436690a26a399603a7096e876a2d"
-# }
-#
-# headers = {
-#     "token":""
-# }
-#
-# res_login = request('login',data=data)
-#
-# if res_login.success:
-#     headers["token"] = res_login.body.token
-#
-# res_stinfo = request("order_all",data={"pageSize":10,"page":1,"token":res_login.body.token},headers=headers)
-#
-# print(res_stinfo.url,res_stinfo.returncode)
-# pprint(res_stinfo.data)
-
-
-
-# login = api.login
-# stinfo = api.getstudentinfo
-# res_stinfo = None
-# res_login = None
-# print("[action]start request login:",login.url)
-# if login.type == "get":
-#     res_login = send_get('login', login.url, data=data)
-# elif login.type == "post":
-#     res_login = send_post('login',login.url,data=data)
-# else:
-#     exit(-1)
-#
-# if res_login.success:
-#     token = res_login.body.token
-#     print("[success] token:",token,res_login.elapsed)
-#     print("[action] start request getstudentinfo:",stinfo.url)
-#     if stinfo.type == "get":
-#         res_stinfo = send_get('getinfo',stinfo.url,headers={"token":token})
-#     elif stinfo.type == "post":
-#         res_stinfo = send_post('getinfo', stinfo.url, headers={"token": token})
-#     else:
-#         exit(-1)
-#     if res_stinfo.success:
-#         print("[success] elapsed:",res_stinfo.elapsed)
-#         pprint(res_stinfo.data)
-#     else:
-#         print("[failed] elapsed:", res_stinfo.elapsed)
-#         print(res_stinfo.errorMsg)
-# else:
-#     print("[failed] elapsed:", res_login.elapsed)
-#     print(res_login.errorMsg)

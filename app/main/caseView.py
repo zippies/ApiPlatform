@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template,request,jsonify,session
 from .framework.main import send_request,CheckError,case_template,parseScript
+from .framework.methods import *
 from ..models import db,Api,ApiCase
 from jinja2 import Template
 from . import url
@@ -8,7 +9,7 @@ from . import url
 caseitem_template = """
 {% for case,api in case_api %}
 <tr id="caseitem_{{ case.id }}">
-    <td id="casename_{{ case.id }}"><a href='javascript:;' onclick="editcase({{ case.id }})" data-toggle="modal" data-target="#gridSystemModal">{{ case.name }}</a></td>
+    <td id="casename_{{ case.id }}"><a href='javascript:;' onclick="editcase({{ case.id }})" title="{{case.desc}}">{{ case.name }}</a></td>
     <td id="relateapi_{{ case.id }}">{{ api.name }}</td>
     <td>
         <a href="javascript:;" onclick="delcase({{ case.id }})"><span class="glyphicon glyphicon-remove"></span></a>
@@ -63,7 +64,6 @@ def sendcaserequest():
         except Exception as e:
             info["result"] = False
             info["errorMsg"] = str(e)
-
         info["messages"] = "\n".join([str(m) for m in session["result"]["messages"]]+session["result"]["failedChecks"]+session["result"]["successChecks"])
         info["success"] = len(session["result"]["successChecks"])
         info["failed"] = len(session["result"]["failedChecks"])

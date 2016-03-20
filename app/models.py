@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from collections import OrderedDict
 from . import db
 
 class Api(db.Model):
@@ -48,7 +49,7 @@ class TestSuit(db.Model):
     name = db.Column(db.String(32),unique=True)
     orders = db.Column(db.PickleType)
     status = db.Column(db.Integer,default=0)
-    result = db.Column(db.PickleType,default={"caseCount":0,"apiCount":0,"details":[]})
+    result = db.Column(db.PickleType,default={"caseCount":0,"apiCount":0,"runCount":1,"details":OrderedDict()})
     createdtime = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):
