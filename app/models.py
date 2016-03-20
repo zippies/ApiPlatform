@@ -48,7 +48,7 @@ class TestSuit(db.Model):
     name = db.Column(db.String(32),unique=True)
     orders = db.Column(db.PickleType)
     status = db.Column(db.Integer,default=0)
-    result = db.Column(db.PickleType,default={"total":0,"success":[],"failed":[]})
+    result = db.Column(db.PickleType,default={"caseCount":0,"apiCount":0,"details":[]})
     createdtime = db.Column(db.DateTime, default=datetime.now)
 
     def __repr__(self):

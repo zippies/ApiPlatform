@@ -6,16 +6,16 @@ import json,requests
 case_template = \
 """
 {% if suit %}
-logger = Logger('{{suit.name}}/{{api.name}}_{{ case.case_name }}')
+logger = Logger('{{suit.name }}/{{ timenow }}/{{api.name}}_{{ case.case_name }}')
 info = {
     "name":'{{ case.case_name }}',
     "desc":'{{ case.case_desc }}',
     "apiname":'{{ api.name }}',
-    "logpath":'{{ suit.name }}/{{ api.name }}_{{ case.case_name }}.log',
+    "logpath":'{{ suit.name }}/{{ timenow }}/{{ api.name }}_{{ case.case_name }}.log',
+    "status":0,
     "passCheck":[],
     "failCheck":[]
 }
-ispass = True
 {% endif %}
 headers = {}
 data = {}
@@ -69,7 +69,7 @@ if not {{ ca }}:{% if purpose == 'run' %}
 else:
     session["result"]["successChecks"].append("[success]{{ ca }}")
 {% elif purpose == 'runsuit' %}
-    ispass = False
+    info["status"] = -1
     info["failCheck"].append("[failed] {{ ca }}")
     logger.log("[failed] {{ ca }}")
 else:
@@ -79,10 +79,9 @@ else:
 {% endfor %}
 
 {% if suit %}
-if ispass:
-    suit.result["success"].append(info)
-else:
-    suit.result["failed"].append(info)
+
+suit.result["details"].append(info)
+
 {% endif %}
 """
 

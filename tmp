@@ -1,10 +1,10 @@
-[INFO] 2016_04_19 22:40:20 Starting new HTTP connection (1): 121.43.101.211
-[DEBUG] 2016_04_19 22:40:20 "POST /suime-user/student/login HTTP/1.1" 500 3321
-[INFO] 2016_04_19 22:40:20 ------------------------------以下为请求信息------------------------------
-[INFO] 2016_04_19 22:40:20 [请求]登录接口:http://121.43.101.211:8180/suime-user/student/login POST
-[INFO] 2016_04_19 22:40:20 [返回码]:500  响应时间:0.03
-[INFO] 2016_04_19 22:40:20 [返回内容]:
-[INFO] 2016_04_19 22:40:20     <html><head><title>Apache Tomcat/7.0.65 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 500 - Filtered request failed.</h1><HR size="1" noshade="noshade"><p><b>type</b> Exception report</p><p><b>message</b> <u>Filtered request failed.</u></p><p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u></p><p><b>exception</b> <pre>javax.servlet.ServletException: Filtered request failed.
+2016_03_20 11:08:06 Starting new HTTP connection (1): 121.43.101.211
+2016_03_20 11:08:06 "POST /suime-user/student/login HTTP/1.1" 500 3321
+2016_03_20 11:08:06 ------------------------------以下为请求信息------------------------------
+2016_03_20 11:08:06 [请求]登录接口:http://121.43.101.211:8180/suime-user/student/login POST
+2016_03_20 11:08:06 [返回码]:500  响应时间:0.08
+2016_03_20 11:08:06 [返回内容]:
+2016_03_20 11:08:06     <html><head><title>Apache Tomcat/7.0.65 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 500 - Filtered request failed.</h1><HR size="1" noshade="noshade"><p><b>type</b> Exception report</p><p><b>message</b> <u>Filtered request failed.</u></p><p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u></p><p><b>exception</b> <pre>javax.servlet.ServletException: Filtered request failed.
 	org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:384)
 	org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
 	org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:346)
@@ -30,17 +30,17 @@
 	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
 	com.confucian.framework.web.filter.LogFilter.doFilter(LogFilter.java:47)
 </pre></p><p><b>note</b> <u>The full stack trace of the root cause is available in the Apache Tomcat/7.0.65 logs.</u></p><HR size="1" noshade="noshade"><h3>Apache Tomcat/7.0.65</h3></body></html>
-[INFO] 2016_04_19 22:40:20 ----------------------------以下为[print]信息----------------------------
-[INFO] 2016_04_19 22:40:20 ----------------------------以下为[check]信息----------------------------
-[INFO] 2016_04_19 22:40:20 [success] returncode == 500
-[INFO] 2016_04_19 22:40:20 [success] elapsed < 0.1
-[INFO] 2016_04_19 22:40:21 Starting new HTTP connection (1): 121.43.101.211
-[DEBUG] 2016_04_19 22:40:21 "POST /suime-user/student/login HTTP/1.1" 500 3321
-[INFO] 2016_04_19 22:40:21 ------------------------------以下为请求信息------------------------------
-[INFO] 2016_04_19 22:40:21 [请求]登录接口:http://121.43.101.211:8180/suime-user/student/login POST
-[INFO] 2016_04_19 22:40:21 [返回码]:500  响应时间:0.04
-[INFO] 2016_04_19 22:40:21 [返回内容]:
-[INFO] 2016_04_19 22:40:21     <html><head><title>Apache Tomcat/7.0.65 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 500 - Filtered request failed.</h1><HR size="1" noshade="noshade"><p><b>type</b> Exception report</p><p><b>message</b> <u>Filtered request failed.</u></p><p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u></p><p><b>exception</b> <pre>javax.servlet.ServletException: Filtered request failed.
+2016_03_20 11:08:06 ----------------------------以下为[print]信息----------------------------
+2016_03_20 11:08:06 ----------------------------以下为[check]信息----------------------------
+2016_03_20 11:08:06 [success] returncode == 500
+2016_03_20 11:08:06 [success] elapsed < 0.1
+2016_03_20 11:08:06 Starting new HTTP connection (1): 121.43.101.211
+2016_03_20 11:08:06 "POST /suime-user/student/login HTTP/1.1" 500 3321
+2016_03_20 11:08:06 ------------------------------以下为请求信息------------------------------
+2016_03_20 11:08:06 [请求]登录接口:http://121.43.101.211:8180/suime-user/student/login POST
+2016_03_20 11:08:06 [返回码]:500  响应时间:0.09
+2016_03_20 11:08:06 [返回内容]:
+2016_03_20 11:08:06     <html><head><title>Apache Tomcat/7.0.65 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 500 - Filtered request failed.</h1><HR size="1" noshade="noshade"><p><b>type</b> Exception report</p><p><b>message</b> <u>Filtered request failed.</u></p><p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u></p><p><b>exception</b> <pre>javax.servlet.ServletException: Filtered request failed.
 	org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:384)
 	org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
 	org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:346)
@@ -66,18 +66,18 @@
 	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
 	com.confucian.framework.web.filter.LogFilter.doFilter(LogFilter.java:47)
 </pre></p><p><b>note</b> <u>The full stack trace of the root cause is available in the Apache Tomcat/7.0.65 logs.</u></p><HR size="1" noshade="noshade"><h3>Apache Tomcat/7.0.65</h3></body></html>
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[print]信息----------------------------
-[INFO] 2016_04_19 22:40:21 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'returncode', 'success', 'url']
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[check]信息----------------------------
-[INFO] 2016_04_19 22:40:21 [failed] returncode == 200
-[INFO] 2016_04_19 22:40:21 [success] elapsed < 0.1
-[INFO] 2016_04_19 22:40:21 Starting new HTTP connection (1): 121.43.101.211
-[DEBUG] 2016_04_19 22:40:21 "POST /suime-user/student/login HTTP/1.1" 500 3321
-[INFO] 2016_04_19 22:40:21 ------------------------------以下为请求信息------------------------------
-[INFO] 2016_04_19 22:40:21 [请求]登录接口:http://121.43.101.211:8180/suime-user/student/login POST
-[INFO] 2016_04_19 22:40:21 [返回码]:500  响应时间:0.03
-[INFO] 2016_04_19 22:40:21 [返回内容]:
-[INFO] 2016_04_19 22:40:21     <html><head><title>Apache Tomcat/7.0.65 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 500 - Filtered request failed.</h1><HR size="1" noshade="noshade"><p><b>type</b> Exception report</p><p><b>message</b> <u>Filtered request failed.</u></p><p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u></p><p><b>exception</b> <pre>javax.servlet.ServletException: Filtered request failed.
+2016_03_20 11:08:06 ----------------------------以下为[print]信息----------------------------
+2016_03_20 11:08:06 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'returncode', 'success', 'url']
+2016_03_20 11:08:06 ----------------------------以下为[check]信息----------------------------
+2016_03_20 11:08:06 [success] returncode == 500
+2016_03_20 11:08:06 [success] elapsed < 0.1
+2016_03_20 11:08:06 Starting new HTTP connection (1): 121.43.101.211
+2016_03_20 11:08:06 "POST /suime-user/student/login HTTP/1.1" 500 3321
+2016_03_20 11:08:06 ------------------------------以下为请求信息------------------------------
+2016_03_20 11:08:06 [请求]登录接口:http://121.43.101.211:8180/suime-user/student/login POST
+2016_03_20 11:08:06 [返回码]:500  响应时间:0.04
+2016_03_20 11:08:06 [返回内容]:
+2016_03_20 11:08:06     <html><head><title>Apache Tomcat/7.0.65 - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 500 - Filtered request failed.</h1><HR size="1" noshade="noshade"><p><b>type</b> Exception report</p><p><b>message</b> <u>Filtered request failed.</u></p><p><b>description</b> <u>The server encountered an internal error that prevented it from fulfilling this request.</u></p><p><b>exception</b> <pre>javax.servlet.ServletException: Filtered request failed.
 	org.apache.shiro.web.servlet.AbstractShiroFilter.doFilterInternal(AbstractShiroFilter.java:384)
 	org.apache.shiro.web.servlet.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:125)
 	org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:346)
@@ -103,43 +103,47 @@
 	org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
 	com.confucian.framework.web.filter.LogFilter.doFilter(LogFilter.java:47)
 </pre></p><p><b>note</b> <u>The full stack trace of the root cause is available in the Apache Tomcat/7.0.65 logs.</u></p><HR size="1" noshade="noshade"><h3>Apache Tomcat/7.0.65</h3></body></html>
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[print]信息----------------------------
-[INFO] 2016_04_19 22:40:21 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'returncode', 'success', 'url']
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[check]信息----------------------------
-[INFO] 2016_04_19 22:40:21 [failed] returncode == 200
-[INFO] 2016_04_19 22:40:21 [success] elapsed < 0.1
-[INFO] 2016_04_19 22:40:21 Starting new HTTP connection (1): 121.43.101.211
-[DEBUG] 2016_04_19 22:40:21 "POST /suime-user/m2/verification/send HTTP/1.1" 404 161
-[INFO] 2016_04_19 22:40:21 ------------------------------以下为请求信息------------------------------
-[INFO] 2016_04_19 22:40:21 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
-[INFO] 2016_04_19 22:40:21 [返回码]:404  响应时间:0.03
-[INFO] 2016_04_19 22:40:21 [返回内容]:
-[INFO] 2016_04_19 22:40:21     {'rqid': '3-26-f02f2c8d-3282-4645-a442-b697ec8c8688', 'body': {'errorDescription': 'uri来源错误', 'errorCode': '50101', 'error': 'http uri source error'}, 'result': 0}
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[print]信息----------------------------
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[check]信息----------------------------
-[INFO] 2016_04_19 22:40:21 [failed] returncode == 200
-[INFO] 2016_04_19 22:40:21 [success] elapsed < 0.1
-[INFO] 2016_04_19 22:40:21 Starting new HTTP connection (1): 121.43.101.211
-[DEBUG] 2016_04_19 22:40:21 "POST /suime-user/m2/verification/send HTTP/1.1" 404 161
-[INFO] 2016_04_19 22:40:21 ------------------------------以下为请求信息------------------------------
-[INFO] 2016_04_19 22:40:21 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
-[INFO] 2016_04_19 22:40:21 [返回码]:404  响应时间:0.05
-[INFO] 2016_04_19 22:40:21 [返回内容]:
-[INFO] 2016_04_19 22:40:21     {'rqid': '3-26-430a2d83-92ff-48ed-bf56-ee1cfadb3595', 'body': {'errorDescription': 'uri来源错误', 'errorCode': '50101', 'error': 'http uri source error'}, 'result': 0}
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[print]信息----------------------------
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[check]信息----------------------------
-[INFO] 2016_04_19 22:40:21 [failed] returncode == 200
-[INFO] 2016_04_19 22:40:21 [success] elapsed < 0.1
-[INFO] 2016_04_19 22:40:21 Starting new HTTP connection (1): 121.43.101.211
-[DEBUG] 2016_04_19 22:40:21 "POST /suime-user/m2/verification/send HTTP/1.1" 404 161
-[INFO] 2016_04_19 22:40:21 ------------------------------以下为请求信息------------------------------
-[INFO] 2016_04_19 22:40:21 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
-[INFO] 2016_04_19 22:40:21 [返回码]:404  响应时间:0.03
-[INFO] 2016_04_19 22:40:21 [返回内容]:
-[INFO] 2016_04_19 22:40:21     {'rqid': '3-26-d5d82000-7645-4e90-999d-9aced709648e', 'body': {'errorDescription': 'uri来源错误', 'errorCode': '50101', 'error': 'http uri source error'}, 'result': 0}
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[print]信息----------------------------
-[INFO] 2016_04_19 22:40:21 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
-[INFO] 2016_04_19 22:40:21 ----------------------------以下为[check]信息----------------------------
-[INFO] 2016_04_19 22:40:21 [failed] returncode == 200
-[INFO] 2016_04_19 22:40:21 [success] elapsed < 0.1
-[INFO] 2016_04_19 22:40:21 127.0.0.1 - - [19/Apr/2016 22:40:21] "GET /runsuit/1 HTTP/1.1" 200 -
+2016_03_20 11:08:06 ----------------------------以下为[print]信息----------------------------
+2016_03_20 11:08:06 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'returncode', 'success', 'url']
+2016_03_20 11:08:06 ----------------------------以下为[check]信息----------------------------
+2016_03_20 11:08:06 [success] returncode == 500
+2016_03_20 11:08:06 [success] elapsed < 0.1
+2016_03_20 11:08:06 Starting new HTTP connection (1): 121.43.101.211
+2016_03_20 11:08:06 "POST /suime-user/m2/verification/send HTTP/1.1" 404 161
+2016_03_20 11:08:06 ------------------------------以下为请求信息------------------------------
+2016_03_20 11:08:06 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+2016_03_20 11:08:06 [返回码]:404  响应时间:0.05
+2016_03_20 11:08:06 [返回内容]:
+2016_03_20 11:08:06     {'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}, 'rqid': '3-26-6f43c740-ebf8-4435-b186-f864084b7581'}
+2016_03_20 11:08:06 ----------------------------以下为[print]信息----------------------------
+2016_03_20 11:08:06 ['_ResponseObj__initialize', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_currentnode', 'body', 'cookies', 'data', 'elapsed', 'errorMsg', 'headers', 'name', 'result', 'returncode', 'rqid', 'success', 'url']
+2016_03_20 11:08:06 ----------------------------以下为[check]信息----------------------------
+2016_03_20 11:08:06 [success] returncode == 404
+2016_03_20 11:08:06 [success] elapsed < 0.1
+2016_03_20 11:08:06 Starting new HTTP connection (1): 121.43.101.211
+2016_03_20 11:08:06 "POST /suime-user/m2/verification/send HTTP/1.1" 404 161
+2016_03_20 11:08:06 ------------------------------以下为请求信息------------------------------
+2016_03_20 11:08:06 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+2016_03_20 11:08:06 [返回码]:404  响应时间:0.09
+2016_03_20 11:08:06 [返回内容]:
+2016_03_20 11:08:06     {'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}, 'rqid': '3-26-7c8073c3-66eb-4236-af6f-4677c2c6a88d'}
+2016_03_20 11:08:06 ----------------------------以下为[print]信息----------------------------
+2016_03_20 11:08:06 ----------------------------以下为[check]信息----------------------------
+2016_03_20 11:08:06 [success] returncode == 404
+2016_03_20 11:08:06 [success] elapsed < 0.1
+2016_03_20 11:08:06 Starting new HTTP connection (1): 121.43.101.211
+2016_03_20 11:08:06 "POST /suime-user/m2/verification/send HTTP/1.1" 404 161
+2016_03_20 11:08:06 ------------------------------以下为请求信息------------------------------
+2016_03_20 11:08:06 [请求]发送验证码接口:http://121.43.101.211:8180/suime-user/m2/verification/send POST
+2016_03_20 11:08:06 [返回码]:404  响应时间:0.03
+2016_03_20 11:08:06 [返回内容]:
+2016_03_20 11:08:06     {'result': 0, 'body': {'error': 'http uri source error', 'errorCode': '50101', 'errorDescription': 'uri来源错误'}, 'rqid': '3-26-34298590-9758-403c-84ac-41d001b3a4ab'}
+2016_03_20 11:08:06 ----------------------------以下为[print]信息----------------------------
+2016_03_20 11:08:06 ----------------------------以下为[check]信息----------------------------
+2016_03_20 11:08:06 [success] returncode == 404
+2016_03_20 11:08:06 [success] elapsed < 0.1
+2016_03_20 11:08:06 127.0.0.1 - - [20/Mar/2016 11:08:06] "GET /runsuit/1 HTTP/1.1" 200 -
+2016_03_20 11:08:07 127.0.0.1 - - [20/Mar/2016 11:08:07] "GET /showlog?logpath=suit01/2016_03_20_11_08_05/%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3_login01.log HTTP/1.1" 200 -
+2016_03_20 11:08:21 127.0.0.1 - - [20/Mar/2016 11:08:21] "GET /suits HTTP/1.1" 200 -
+2016_03_20 11:08:21 127.0.0.1 - - [20/Mar/2016 11:08:21] "GET /freshsuits HTTP/1.1" 200 -
+2016_03_20 11:09:02  * Detected change in 'C:\\Users\\Lin\\Desktop\\selftest\\ApiPlatform\\app\\main\\suitView.py', reloading

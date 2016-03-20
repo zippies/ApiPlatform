@@ -219,13 +219,26 @@ active
                     if(data.result){
                         console.log(data.info)
                         $btn.button("reset")
-                        $("#result_"+id).append(data.info).show()
+                        $("#result_"+id).append(data.info)
                         layer.msg("运行成功")
                     }else{
                         layer.msg("运行失败:"+data.errorMsg)
                     }
                 }
             })
+        }
+
+        function showlog(casename,logpath){
+            width = document.body.clientWidth * 0.7
+            height = document.body.clientHeight * 0.6
+            console.log(width,height)
+            layer.open({
+                type: 2,
+                title: "用例名："+casename,
+                area: [width+"px", height+"px"],
+                shadeClose: true, //开启遮罩关闭
+                content: '/showlog?logpath='+logpath
+            });
         }
     </script>
 {% endblock %}

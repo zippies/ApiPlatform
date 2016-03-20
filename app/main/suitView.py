@@ -4,7 +4,9 @@ from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.logger import Logger
 from ..models import  db,Api,ApiCase,TestSuit
 from jinja2 import Template
+from config import Config
 from . import url
+import time,os
 
 @url.route("/")
 @url.route("/index")
@@ -71,15 +73,15 @@ suit_template = \
             </div>
         {% endfor %}
         </div>
-        <ul class="list-inline list-group">
-            <li>
-                <button id="runsuit_{{suit.id}}" onclick="runsuit({{suit.id}})" data-loading-text="正在运行" autocomplete="off" class="btn btn-default">运行</button>
-            </li>
-            <li><button onclick="delsuit({{suit.id}})" class="btn btn-default">删除</button></li>
-            <div class="well" id="result_{{ suit.id }}" style="display:none">
+            <ul class="list-inline list-group">
+                <li>
+                    <button id="runsuit_{{suit.id}}" onclick="runsuit({{suit.id}})" data-loading-text="正在运行" autocomplete="off" class="btn btn-default">运行</button>
+                </li>
+                <li><button onclick="delsuit({{suit.id}})" class="btn btn-default">删除</button></li>
+                <div id="result_{{ suit.id }}" style="padding:10px">
 
-            </div>
-        </ul>
+                </div>
+            </ul>
     </div>
 </div>
 
@@ -191,6 +193,8 @@ def runsuit(id):
     db.session.add(suit)
     db.session.commit()
 
+    timenow = time.strftime("%Y_%m_%d_%H_%M_%S")
+
     for case in testcases:
         actionParser = parseScript(case["case_content"])
         c = Template(case_template).render(
@@ -199,6 +203,7 @@ def runsuit(id):
             printActions = actionParser.printActions,
             api = case["api"],
             case = case,
+            timenow = timenow,
             checkActions = actionParser.checkActions,
             purpose = "runsuit",
             suit=suit
@@ -206,41 +211,61 @@ def runsuit(id):
         try:
             exec(c)
         except Exception as e:
-            info = {"result":False,"errorMsg":"执行用例:%s 出错:"%(case["case_name"],str(e))}
+            info = {"result":False,"errorMsg":"执行用例:%s 出错:%s" %(case["case_name"],str(e))}
             return jsonify(info)
 
-    suit.result["total"] = len(testcases)
-    from pprint import pprint
+    suit.result["caseCount"] = len(testcases)
+    suit.result["apiCount"] = len(suit.orders)
 
     suit = TestSuit(id=suit.id,status=2,result=suit.result)
     db.session.merge(suit)
     db.session.commit()
 
-    pprint(suit.result)
     s = Template(result_template).render(result=suit.result)
     info["info"] = s
-    print(s)
+
     return jsonify(info)
 
 result_template = """
-<div>测试结果:{% if result.failed|length > 0 %}<span style="color:red">失败</span>{% else %}<span style="color:green">成功</span>{% endif %}</div>
-<div>
-失败用例：
-    <ul style="margin-left:20px">
-    {% for api in result.failed %}
-        <li>
-        {{ api.name }}
-
-        </li>
-    {% endfor %}
-    </ul>
-</div>
-<div>
-成功用例：
-    <ul style="margin-left:20px">
-    {% for api in result.success %}
-        <li>{{ api.name }}</li>
-    {% endfor %}
-    </ul>
-</div>
+<span style="color:#FF7F24">测试接口数:{{ result.apiCount }}&nbsp&nbsp&nbsp&nbsp测试用例数:{{ result.caseCount }}</span>
+<table class="table table-striped" style="width:100%">
+    <thead>
+        <th class="col-lg-2">接口名</th>
+        <th class="col-lg-2">用例名</th>
+        <th class="col-lg-2">用例描述</th>
+        <th class="col-lg-2">检查点信息</th>
+        <th class="col-lg-2" style="text-align:center">成功/失败</th>
+        <th class="col-lg-2">日志信息</th>
+    </thead>
+    <tbody>
+        {% for item in result.details %}
+        <tr class="{% if item.status == 0 %}success{% else %}danger{% endif %}">
+            <td>{{ item.apiname }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.desc }}</td>
+            <td>
+                {% for fc in item.failCheck %}
+                    <li>{{ fc }}</li>
+                {% endfor %}
+                {% for pc in item.passCheck %}
+                    <li>{{ pc }}</li>
+                {% endfor %}
+            </td>
+            <td style="text-align:center">{% if item.status == 0 %}<span style="color:green">成功</span>{% else %}<span style="color:red">失败</span>{% endif %}</td>
+            <td><a href="javascript:;" onclick="showlog('{{ item.name }}','{{ item.logpath }}')">查看日志</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 """
+
+@url.route("/showlog")
+def showlog():
+    logpath = request.args.get("logpath")
+    realpath = os.path.join(Config.log_path,logpath)
+    if os.path.exists(realpath):
+        with open(realpath,"r") as f:
+            return "<br>".join(f.readlines())
+
+    else:
+        return "未找到日志文件"

@@ -4,7 +4,7 @@ from config import Config
 
 class Logger(object):
     def __init__(self,name):
-        self.format = '[%(levelname)s] %(asctime)s %(message)s'
+        self.format = '%(asctime)s %(message)s'
         fm = logging.Formatter(self.format)
         logging.basicConfig(
             level=logging.DEBUG,
@@ -13,8 +13,9 @@ class Logger(object):
             filename="tmp",
             filemode='w'
         )
-        if not os.path.isdir(os.path.join(Config.log_path,name.split("/")[0])):
-            os.mkdir(os.path.join(Config.log_path,name.split("/")[0]))
+        if not os.path.isdir(os.path.join(Config.log_path,name[:name.rindex("/")])):
+            os.makedirs(os.path.join(Config.log_path,name[:name.rindex("/")]))
+
         infohandler = logging.FileHandler('%s.log' % os.path.join(Config.log_path,name))
 
         infohandler.setLevel(logging.INFO)
