@@ -10,7 +10,7 @@ class Logger(object):
             level=logging.DEBUG,
             format=self.format,
             datefmt='%Y_%m_%d %H:%M:%S',
-            filename="tmp",
+            filename="data/tmp",
             filemode='w'
         )
         if not os.path.isdir(os.path.join(Config.log_path,name[:name.rindex("/")])):

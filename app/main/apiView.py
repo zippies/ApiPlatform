@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .framework.main import apilist,send_request
+from .framework.main import send_request
 from .framework.methods import *
 from flask import render_template,request,jsonify
 from ..models import db,Api

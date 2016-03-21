@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict,namedtuple
-from . import web_apidoc
 import json,requests,time
 
 case_template = \
@@ -189,26 +188,6 @@ class ResponseObj(object):
                 self.__initialize(value)
             else:
                 setattr(self._currentnode,key,value)
-
-class APIS(object):
-    def __init__(self,name,apilist):
-        self.name = name
-        self.apis= [api['name'] for api in apilist]
-        self.__initialize(apilist)
-
-    def __initialize(self,apilist):
-        for a in apilist:
-            if hasattr(self,a["name"]):
-                print("[warning]api:%s is already exists,ignored" %a["name"])
-                continue
-            setattr(self,a["name"],api(url=a["url"],type=a["type"],request=a["request"],response=a["response"]))
-
-    def __repr__(self):
-        return "<%s>" %self.name
-
-api = namedtuple("api", "url type request response")
-apilist = [eval("web_apidoc.%s" %api) for api in dir(web_apidoc) if not api.startswith("_")]
-apis = APIS("SuimeAPI",apilist)
 
 def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=None):
     resp = None
