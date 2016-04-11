@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import render_template,request,jsonify
 from . import main
-from .framework.objects import apilist,send_request,support_methods
+from .framework.main import apilist,send_request,support_methods
 import json
 
 @main.route("/apis")
@@ -14,7 +14,6 @@ def testapi():
     method = request.form.get("method").lower()
     url = request.form.get("url")
     data = request.form.get("data")
-
     try:
         res = send_request("testapi",url=url,method=method,data=data)
         resp = {

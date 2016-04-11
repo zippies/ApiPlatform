@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import render_template
-from .framework.objects import support_methods
+from .framework.main import support_methods
 from . import main
 
 @main.route("/cases")

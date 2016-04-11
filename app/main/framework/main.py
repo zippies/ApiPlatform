@@ -36,8 +36,11 @@ class ResponseObj(object):
         self.returncode = resp.status_code
         if resp.ok:
             self.errorMsg = None
-            self.data = resp.json()
-            self.__initialize(resp.json())
+            try:
+                self.data = resp.json()
+                self.__initialize(resp.json())
+            except Exception as e:
+                self.data = resp.text
         else:
             self.data = None
             self.errorMsg = "%s %s" % (resp.status_code, resp.reason)
@@ -105,4 +108,5 @@ def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=No
     else:
         print("unsupport method:",method)
         exit(-1)
+
     return ResponseObj(api_name,url,resp)
