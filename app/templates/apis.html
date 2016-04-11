@@ -72,24 +72,14 @@ active
                         <li role="presentation" class="active"><a href="#req-data" onclick="refreshdata()" aria-controls="req-data" role="tab" data-toggle="tab">请求参数</a></li>
                     </ul>
                     <div class="tab-content">
+                        <!-- auth begin -->
                         <div role="tabpanel" class="tab-pane" id="req-auth">
                             <div class="panel-body" id="req-headers-panel" style="height:170px">
-                                no headers
+                                no auth
                             </div>
                         </div>
-                        <div role="tabpanel" class="tab-pane active" id="req-data">
-                            <textarea id="requestdata"></textarea>
-                            <script>
-                                var requestmirror = CodeMirror.fromTextArea(document.getElementById('requestdata'), {
-                                    indentUnit: 4,
-                                    lineNumbers: true,
-                                    smartIndent: true,
-                                    lineWrapping:true,
-                                    mode: "python"
-                                });
-                                requestmirror.setSize("100%","170px")
-                            </script>
-                        </div>
+                        <!-- auth end -->
+                        <!-- header begin -->
                         <div role="tabpanel" class="tab-pane" id="req-headers">
                             <textarea id="headerarea"></textarea>
                             <script>
@@ -103,6 +93,22 @@ active
                                 headermirror.setSize("100%","170px")
                             </script>
                         </div>
+                        <!-- header ennd -->
+                        <!-- reqdata begin -->
+                        <div role="tabpanel" class="tab-pane active" id="req-data">
+                            <textarea id="requestdata"></textarea>
+                            <script>
+                                var requestmirror = CodeMirror.fromTextArea(document.getElementById('requestdata'), {
+                                    indentUnit: 4,
+                                    lineNumbers: true,
+                                    smartIndent: true,
+                                    lineWrapping:true,
+                                    mode: "python"
+                                });
+                                requestmirror.setSize("100%","170px")
+                            </script>
+                        </div>
+                        <!-- reqdata end -->
                     </div>
 
                 </div>
@@ -113,7 +119,7 @@ active
     <!-- response header set begin-->
             <div class="row rowitem">
                 <div class="col-lg-9">
-                    Response status:<span id="statuscode"></span>
+                    Response status: <span id="statuscode"></span>
                     <ul class="nav nav-tabs">
                         <li role="presentation" class="active"><a href="#resp-body" aria-controls="resp-body" role="tab" data-toggle="tab">Body</a></li>
                         <li role="presentation"><a href="#resp-headers" aria-controls="resp-headers" role="tab" data-toggle="tab">Headers</a></li>
@@ -233,7 +239,9 @@ active
                 return
             }
             data = requestmirror.getDoc().getValue()
-
+            respmirror.setValue("")
+            $("#resp-headers-panel").html("no headers")
+            $("#resp-cookies-panel").html("no cookies")
             $.ajax({
                 url: "/testapi",
                 type: "post",
@@ -248,7 +256,12 @@ active
                         headers = data.response.headers
                         cookies = data.response.cookies
                         statuscode = data.response.statusCode
-                        $("#statuscode").html("<font color='green'>"+ statuscode +"</font>")
+                        if(data.response.success){
+                            $("#statuscode").html("<span style='color:green;font-weight:bold;'>"+ statuscode +"</span>")
+                        }else{
+                            $("#statuscode").html("<span style='color:red;font-weight:bold;'>"+ statuscode +"</span>")
+                        }
+
                         respmirror.setValue(JSON.parse(body))
                         if(headers){
                             $("#resp-headers-panel").html(JSON.stringify(headers))

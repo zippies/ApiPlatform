@@ -42,7 +42,7 @@ class ResponseObj(object):
             except Exception as e:
                 self.data = resp.text
         else:
-            self.data = None
+            self.data = resp.text
             self.errorMsg = "%s %s" % (resp.status_code, resp.reason)
 
     def __initialize(self,obj):
