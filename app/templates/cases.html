@@ -2,27 +2,13 @@
 
 {% block head %}
     {{ super() }}
-    <script src="/static/bower_components/codemirror/lib/codemirror.js"></script>
-    <script src="/static/bower_components/codemirror/mode/python/python.js"></script>
 {% endblock %}
 
 {% block css_index %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/bower_components/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/monokai.css">
-    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/blackboard.css">
-    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/night.css">
     <style>
-        .form-request-data{
-            width:100%;
-            height:200px;
-        }
         .rowitem{
             margin-top:10px
-        }
-        .support_method{
-            border:1px solid grey;
-            height:300px;
         }
     </style>
 {% endblock %}
@@ -43,138 +29,80 @@ active
 
 
 {% block container%}
-<div class="modal fade bs-example-modal-lg" id="gridSystemModal" role="dialog" aria-labelledby="gridSystemModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModalLabel">修改用例信息</h4>
-            </div>
-            <div class="modal-body">
-                <div class="input-group">
-                    <span class="input-group-addon">名 称 </span>
-                    <input type="text" id="edit-name" class="form-control">
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">描 述 </span>
-                    <input type="text" id="edit-desc" class="form-control">
-                </div>
-                <textarea id="editcontent"></textarea>
-                <script>
-                    var editmirror = CodeMirror.fromTextArea(document.getElementById('editcontent'),{
-                        indentUnit: 4,
-                        lineNumbers: true,
-                        mode: "python"
-                    })
-                </script>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="closemodal" data-dismiss="modal">取消</button>
-                <button type="button" id="saveedit" class="btn btn-primary">保存修改</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
-
-<ul class="nav nav-tabs">
-    <li role="presentation" class="active"><a href="#newcasepanel" aria-controls="newcasepanel" role="tab" data-toggle="tab">新增测试用例</a></li>
-    <li role="presentation"><a href="#allcasepanel" aria-controls="allcasepanel" role="tab" data-toggle="tab">所有测试用例</a></li>
-</ul>
-<div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="newcasepanel">
-        <div class="panel-body">
 <!-- newcasepanel begin -->
-            <div class="row rowitem">
-                <div class="col-lg-9">
-                    <ul class="list-inline">
-                        <li>
-                            选择测试接口：
-                        </li>
-                        <li>
-                            <select id="apiselect" class="form-control">
-                                <option value="0">请选择接口</option>
-                                {% for api in apis %}
-                                    <option value="{{ api.id }}">{{ api.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </li>
-                        <li><a href="javascript:;" onclick="sendrequest('run')" class="btn btn-primary">运行</a></li>
-                        <li><a href="javascript:;" onclick="sendrequest('save')" class="btn btn-warning">保存</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-3">
-                </div>
-            </div>
-            <div class="row rowitem">
-                <div class="col-lg-3">
-                    <input type="text" id="casename" class="form-control" placeholder="用例名称">
-                </div>
-                <div class="col-lg-6">
-                    <input type="text" id="casedesc" class="form-control" placeholder="检查点描述">
-                </div>
-            </div>
-            <div class="rowitem">测试脚本：</div>
-            <div class="row rowitem">
-                <div class="col-lg-9">
-                    <textarea id="testscriptarea"></textarea>
-                    <script>
-                        var scriptmirror = CodeMirror.fromTextArea(document.getElementById('testscriptarea'),{
-                            indentUnit: 4,
-                            lineNumbers: true,
-                            lineWrapping:true,
-                            mode: "python"
-                        })
-                        scriptmirror.focus();
-                    </script>
-                </div>
-                <div class="col-lg-3 list-group">
-                    {% for name,method in support_methods.items() %}
-                        <a href="#" class="list-group-item" name="{{name}}">{{ name }}</a>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="row rowitem">
-                <div class="col-lg-9">
-                    <div>运行结果：</div>
-                    <span id="passcount" style="font-size:13px;color:green;"></span>&nbsp&nbsp<span id="failcount" style="font-size:13px;color:red;"></span>
-                    <textarea id="resultarea"></textarea>
-                    <script>
-                        var resultmirror = CodeMirror.fromTextArea(document.getElementById('resultarea'),{
-                            indentUnit: 4,
-                            lineNumbers: true,
-                            lineWrapping:true,
-                            mode: "python",
-                            theme:"monokai"
-                        })
-                        resultmirror.setSize("100%","500px")
-                    </script>
-                </div>
-                <div class="col-lg-3"></div>
-            </div>
-<!-- newcasepanel end-->
+<div class="row rowitem">
+    <div class="col-lg-9">
+        <div>
+            <ul class="list-inline">
+                <li>
+                    选择测试接口：
+                </li>
+                <li>
+                    <select id="apiselect" class="form-control">
+                        <option value="0">请选择接口</option>
+                        {% for api in apis %}
+                            <option value="{{ api.id }}">{{ api.name }}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+            </ul>
+        </div>
+        <div class="rowitem">
+            <ul class="list-inline">
+                <li><input type="text" id="casename" class="form-control" placeholder="用例名称"></li>
+                <li><input type="text" id="casedesc" class="form-control" placeholder="检查点描述"></li>
+                <li><a href="javascript:;" name="run" onclick="sendrequest(this.name)" class="btn btn-primary">运行</a></li>
+                <li><a href="javascript:;" name="save" id="save" onclick="sendrequest(this.name)" class="btn btn-warning">保存</a></li>
+            </ul>
+        </div>
+        <div class="rowitem">测试脚本：</div>
+        <div class="rowitem">
+            <textarea id="testscriptarea" style="height:300px;width:100%"></textarea>
+            <script>
+                var scriptmirror = CodeMirror.fromTextArea(document.getElementById('testscriptarea'),{
+                    indentUnit: 4,
+                    lineNumbers: true,
+                    smartIndent: true,
+                    lineWrapping:true,
+                    mode: "python"
+                })
+                scriptmirror.setSize("100%","300px")
+                scriptmirror.focus()
+            </script>
+        </div>
+
+        <div class="rowitem">
+            <div>运行结果：</div>
+            <span id="passcount" style="font-size:13px;color:green;"></span>&nbsp&nbsp<span id="failcount" style="font-size:13px;color:red;"></span>
+            <textarea id="resultarea"></textarea>
+            <script>
+                var resultmirror = CodeMirror.fromTextArea(document.getElementById('resultarea'),{
+                    indentUnit: 4,
+                    lineNumbers: true,
+                    lineWrapping:true,
+                    mode: "python",
+                    theme:"monokai"
+                })
+                resultmirror.setSize("100%","500px")
+            </script>
         </div>
     </div>
 
-    <div role="tabpanel" class="tab-pane" id="allcasepanel">
-        <div class="panel-body">
+    <div class="col-lg-3" style="padding:5px;min-height:200px;max-height:500px;overflow:scroll;OVERFLOW-X:hidden;">
+        <div style="text-align:center"><button class="btn btn-info" id="newcase">新增用例</button></div>
 <!-- allcasepanel begin-->
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>用例名称</th>
-                        <th>检查点描述</th>
-                        <th>用例属于接口</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="caselist">
-                </tbody>
-            </table>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>用例名称</th>
+                    <th>归属接口</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="caselist">
+            </tbody>
+        </table>
 <!-- allcasepanel end-->
-        </div>
     </div>
 </div>
 
@@ -188,19 +116,27 @@ active
         $(function(){
             freshcasetable()
 
-            $(this).find("option[value="+sessionStorage.testapi_id+"]").attr("selected",true)
+            sessionStorage.operation = "new"
 
-            scriptmirror.setValue(JSON.parse(sessionStorage.testscript))
+            if(sessionStorage.operation != 'edit'){
+                layer.tips('当前模式:新增用例', '#apiselect');
+            }
+
+            $(this).find("option[value="+sessionStorage.testapi_id+"]").attr("selected",true)
 
             $("#apiselect").change(function(){
                 api_id = $(this).find("option:selected").attr("value")
                 sessionStorage.testapi_id = api_id
-                try{
-                    choicedapi = JSON.parse(sessionStorage.apis)[api_id]
-                }catch(e){
-                    console.log(e)
-                }
+            })
 
+            $("#newcase").click(function(){
+                $("#apiselect").removeAttr("disabled").focus()
+                $(document).find("option[value=0]").attr("selected",true)
+                $("#casename").val("")
+                $("#casedesc").val("")
+                scriptmirror.setValue("")
+                sessionStorage.operation = "new"
+                layer.tips('当前模式:新增用例', '#apiselect');
             })
         })
 
@@ -208,23 +144,33 @@ active
             testscript = scriptmirror.getDoc().getValue()
             sessionStorage.testscript = JSON.stringify(testscript)
 
-            if(purpose == 'save' && !$("#casename").val()){
-                layer.msg("用例名不能为空")
-                $("#casename").focus()
-                return
+            if(purpose == "run"){
+                if($("#apiselect").find("option:selected").val() == 0){
+                    layer.msg("请选择接口")
+                    $("#apiselect").focus()
+                    return
+                }else if(!testscript){
+                    layer.msg("测试脚本不能为空")
+                    return
+                }
+            }else{
+                if(!$("#casename").val()){
+                    layer.msg("用例名不能为空")
+                    $("#casename").focus()
+                    return
+                }else if(!testscript){
+                    layer.msg("测试脚本不能为空")
+                    return
+                }
             }
 
             resultmirror.setValue("")
-            if(!testscript){
-                layer.msg("测试脚本不能为空")
-                return
-            }
 
             $.ajax({
                 url: "/sendcaserequest",
                 type: "post",
                 async: true,
-                data: {"id":sessionStorage.testapi_id,"script":testscript,"purpose":purpose,"name":$("#casename").val(),"desc":$("#casedesc").val()},
+                data: {"apiid":sessionStorage.testapi_id,"caseid":sessionStorage.editcaseid,"script":testscript,"purpose":purpose,"name":$("#casename").val(),"desc":$("#casedesc").val()},
                 error: function(request){
                     layer.msg(request.status)
                 },
@@ -239,7 +185,6 @@ active
                             layer.msg("保存成功")
                             $("#passcount").html("")
                             $("#failcount").html("")
-
                         }
                     }else{
                         layer.msg("请求失败:"+ data.errorMsg)
@@ -287,25 +232,22 @@ active
             })
         }
 
-        function refreshcontent(){
-            setTimeout(function(){
-                editmirror.refresh();
-                editmirror.focus();
-            },200);
-            editmirror.refresh();
-        }
-
-
         function editcase(caseid){
+            sessionStorage.operation = "edit"
+            sessionStorage.editcaseid = caseid
+            $("#save").attr("name","edit")
             $.ajax({
                 url:"/getcaseinfo/"+caseid,
                 type:"get",
                 success:function(data){
                     if(data.result){
-                        $("#edit-name").val(data.name)
-                        $("#edit-desc").val(data.desc)
-                        refreshcontent()
-                        editmirror.setValue(data.content)
+                        layer.tips('当前模式:编辑用例'+data.name, '#apiselect');
+                        $("#apiselect").attr("disabled","disabled")
+                        $(document).find("option[value="+data.api_id+"]").attr("selected",true)
+                        $("#casename").val(data.name)
+                        $("#casedesc").val(data.desc)
+                        scriptmirror.setValue(data.content)
+                        sessionStorage.testapi_id = data.api_id
                     }else{
                         layer.msg("获取用例数据失败")
                     }

@@ -2,21 +2,13 @@
 
 {% block head %}
     {{ super() }}
-    <script src="/static/bower_components/codemirror/lib/codemirror.js"></script>
-    <script src="/static/bower_components/codemirror/mode/python/python.js"></script>
 {% endblock %}
 
 {% block css_index %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/bower_components/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/monokai.css">
     <style>
         .rowitem{
             margin-top:10px
-        }
-        .support_method{
-            border:1px solid grey;
-            height:300px;
         }
     </style>
 {% endblock %}
@@ -228,8 +220,12 @@ active
                 sessionStorage.url = $(this).val()
             });
 
-            requestmirror.setValue(sessionStorage.reqdata)
-            headermirror.setValue(sessionStorage.headerdata)
+            if(sessionStorage.reqdata){
+                requestmirror.setValue(sessionStorage.reqdata)
+            }
+            if(sessionStorage.headerdata){
+                headermirror.setValue(sessionStorage.headerdata)
+            }
 
             if(sessionStorage.method){
                 $("#method-btn").html(sessionStorage.method+' <span class="caret"></span>')

@@ -38,12 +38,10 @@ else:
 caseitem_template = """
 {% for case,api in case_api %}
 <tr id="caseitem_{{ case.id }}">
-    <td id="id_{{ case.id }}">{{ case.id }}</td>
     <td id="casename_{{ case.id }}"><a href='javascript:;' onclick="editcase({{ case.id }})" data-toggle="modal" data-target="#gridSystemModal">{{ case.name }}</a></td>
-    <td id="casedesc_{{ case.id }}">{{ case.desc }}</td>
     <td id="relateapi_{{ case.id }}">{{ api.name }}</td>
     <td>
-        <button onclick="delcase({{ case.id }})">删除</button>
+        <a href="javascript:;" onclick="delcase({{ case.id }})"><span class="glyphicon glyphicon-remove"></span></a>
     </td>
 </tr>
 {% endfor %}
@@ -69,15 +67,16 @@ def sendcaserequest():
         "failedChecks":[]
     }
     info = {"result":True,"errorMsg":None,"ok":None,"success":0,"failed":0,"messages":None}
-    id = int(request.form.get("id"))
-    api = Api.query.filter_by(id=id).first()
+    apiid = int(request.form.get("apiid"))
+    api = Api.query.filter_by(id=apiid).first()
+    name = request.form.get("name")
+    desc = request.form.get("desc")
     script = request.form.get("script").strip()
     purpose = request.form.get("purpose")
 
     if purpose == "run":
         setItems, actions, checkItems = [], [], []
         scripts = [s for s in script.split("\n") if s.strip()]
-
         for script in scripts:
             if script.strip().startswith("[set]"):
                 setItems.append(script[5:].strip())
@@ -107,9 +106,7 @@ def sendcaserequest():
         info["success"] = len(session["result"]["successChecks"])
         info["failed"] = len(session["result"]["failedChecks"])
         info["ok"] = False if session["result"]["failedChecks"] else True
-    else:
-        name = request.form.get("name")
-        desc = request.form.get("desc")
+    elif purpose == "save":
         case = ApiCase.query.filter_by(name=name).first()
         if case:
             info["result"] = False
@@ -125,7 +122,24 @@ def sendcaserequest():
             except Exception as e:
                 info["result"] = False
                 info["errorMsg"] = "数据库异常"
-
+    elif purpose == "edit":
+        print("edit case",name)
+        try:
+            caseid = int(request.form.get("caseid"))
+            case = ApiCase.query.filter_by(id=caseid).first()
+            if case:
+                case.name = name.strip()
+                case.desc = desc.strip()
+                case.content = script.strip()
+                db.session.add(case)
+                db.session.commit()
+            else:
+                info = {"result":False,"errorMsg":"该用例不存在或已被删除"}
+        except Exception as e:
+            info["result"] = False
+            info["errorMsg"] = "数据库异常"
+    else:
+        info = {"result":False,"errorMsg":"不支持的请求！"}
     return jsonify(info)
 
 @url.route("/freshcasetable")
@@ -154,10 +168,11 @@ def delcase(id):
 
 @url.route("/getcaseinfo/<int:id>")
 def getcaseinfo(id):
-    info = {"result":True,"name":None,"desc":None,"content":None}
+    info = {"result":True,"api_id":None,"name":None,"desc":None,"content":None}
     try:
         case = ApiCase.query.filter_by(id=id).first()
         if case:
+            info["api_id"] = case.api_id
             info["content"] = case.content
             info["name"] = case.name
             info["desc"] = case.desc
