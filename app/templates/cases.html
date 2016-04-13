@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script src="/static/bower_components/codemirror/lib/codemirror.js"></script>
+    <script src="/static/bower_components/codemirror/mode/python/python.js"></script>
+{% endblock %}
+
+{% block css_index %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/bower_components/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/monokai.css">
+    <style>
+        .form-request-data{
+            width:100%;
+            height:200px;
+        }
+        .rowitem{
+            margin-top:10px
+        }
+        .support_method{
+            border:1px solid grey;
+            height:300px;
+        }
+    </style>
+{% endblock %}
+
+{% block nav %}
+    {{ super() }}
+{% endblock %}
+
+{% block jobclass %}
+{% endblock %}
+
+{% block apiclass %}
+{% endblock %}
+
+{% block caseclass %}
+active
+{% endblock %}
+
+
+{% block container%}
+
+<ul class="nav nav-tabs">
+    <li role="presentation" class="active"><a href="#newcasepanel" aria-controls="newcasepanel" role="tab" data-toggle="tab">新增测试用例</a></li>
+    <li role="presentation"><a href="#allcasepanel" aria-controls="allcasepanel" role="tab" data-toggle="tab">所有测试用例</a></li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="newcasepanel">
+        <div class="panel-body">
+<!-- newcasepanel begin -->
+            <div class="row rowitem">
+                <div class="col-lg-9">
+                    选择测试接口：
+                    <select class="form-control">
+                        <option></option>
+                        <option></option>
+                        <option></option>
+                        <option></option>
+                        <option></option>
+                        <option></option>
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <a href="javascript:;" onclick="sendrequest()" class="btn btn-primary">请求</a>
+                    <a href="javascript:;" onclick="saveapi()" class="btn btn-warning">保存</a>
+                </div>
+            </div>
+            <div class="row rowitem collapse" id="requestdatadiv">
+                <div class="col-lg-9">
+                    请求参数：
+                    <textarea id="requestdata" name="requestdata" class="form-request-data"></textarea>
+                    <script>
+                        textarea_data = document.getElementById('requestdata')
+                        var requestdata = CodeMirror.fromTextArea(textarea_data, {
+                            indentUnit: 4,
+                            smartIndent: true,
+                            lineWrapping:true,
+                            mode: "python"
+                        });
+                        requestdata.setSize("100%","100px")
+                    </script>
+                </div>
+            </div>
+            <div class="rowitem">测试脚本：</div>
+            <div class="row rowitem">
+                <div class="col-lg-9">
+                    <textarea id="testscriptarea"></textarea>
+                    <script>
+                        script_data = document.getElementById('testscriptarea')
+                        var scriptdata = CodeMirror.fromTextArea(script_data,{
+                            indentUnit: 4,
+                            lineNumbers: true,
+                            lineWrapping:true,
+                            mode: "python",
+                            theme: "monokai"
+                        })
+                        scriptdata.focus();
+                    </script>
+                </div>
+                <div class="col-lg-3 list-group">
+                    {% for name,method in support_methods.items() %}
+                        <a href="#" class="list-group-item" name="{{name}}">{{ name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row rowitem">
+                <div class="col-lg-9">
+                    Response:
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href="#body" aria-controls="body" role="tab" data-toggle="tab">Body</a></li>
+                        <li role="presentation"><a href="#headers" aria-controls="headers" role="tab" data-toggle="tab">headers</a></li>
+                        <li role="presentation"><a href="#cookies" aria-controls="cookies" role="tab" data-toggle="tab">cookies</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="body">
+                            <textarea id="responsearea"></textarea>
+                            <script>
+                                var respmirror = CodeMirror.fromTextArea(document.getElementById('responsearea'),{
+                                    indentUnit: 4,
+                                    lineNumbers: true,
+                                    lineWrapping:true,
+                                    mode: "python",
+                                    theme: "monokai"
+                                })
+                                respmirror.setSize("100%","150px")
+                            </script>
+
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="headers">
+                            <div class="panel-body" id="headers-panel">
+                                no headers
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="cookies">
+                            <div class="panel-body" id="cookies-panel">
+                                no cookies
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+<!-- newcasepanel end-->
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="allcasepanel">
+        <div class="panel-body">
+<!-- allcasepanel begin-->
+
+<!-- allcasepanel end-->
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+
+
+
+{% block script_index %}
+    {{ super() }}
+    <script src="/static/bower_components/layer/layer.js"></script>
+    <script src="/static/bower_components/json/json2.js"></script>
+    <script>
+        $(function(){
+            $("#url").val(sessionStorage.url)
+
+            $("#url").on('input',function(e){
+                sessionStorage.url = $(this).val()
+            });
+
+            if(sessionStorage.method){
+                $("#method-btn").html(sessionStorage.method+' <span class="caret"></span>')
+            }else{
+                sessionStorage.method = "GET"
+            }
+
+            $(".method-item").click(function(){
+                $("#method-btn").html($(this).html()+' <span class="caret"></span>')
+                sessionStorage.method = $(this).html();
+            })
+
+        })
+
+        function refreshdata(){
+            setTimeout(function(){
+                requestdata.refresh();
+            },200);
+            requestdata.refresh();
+
+            requestdata.focus();
+        }
+
+        function sendrequest(){
+            method = sessionStorage.method
+            console.log(method)
+            url = $("#url").val()
+            if(!url){
+                $("#url").focus()
+                layer.msg("url不允许为空")
+                return
+            }
+            data = requestdata.getDoc().getValue()
+            testscript = scriptdata.getDoc().getValue()
+
+            $.ajax({
+                url: "/testapi",
+                type: "post",
+                async: true,
+                data: {"method":method,"url":url,"data":data,"script":testscript},
+                error: function(request){
+                    layer.msg(request.status)
+                },
+                success: function(data){
+                    if(data.result){
+                        body = data.response.data
+                        headers = data.response.headers
+                        cookies = data.response.cookies
+                        respmirror.setValue(body)
+                        respmirror.refresh()
+                        if(headers){
+                            $("#headers-panel").html(JSON.stringify(headers))
+                        }else{
+                            $("#headers-panel").html("headers内没有内容")
+                        }
+                        if(cookies){
+                            $("#cookies-panel").html(JSON.stringify(cookies))
+                        }else{
+                            $("#cookies-panel").html("cookies内没有内容")
+                        }
+
+                    }else{
+                        layer.msg("请求失败:"+ data.errorMsg)
+                        respmirror.setValue(data.errorMsg)
+                        respmirror.refresh()
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}
