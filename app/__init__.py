@@ -11,7 +11,7 @@ def createApp():
 	app.config.from_object(config)
 	config.init_app(app)
 	db.init_app(app)
-	from .main import main as BluePrint
+	from .main import url as BluePrint
 	app.register_blueprint(BluePrint)
 
 	return(app)

@@ -9,10 +9,7 @@ support_methodlist = [
     ("发送请求","send_request('login',data=data)"),
     ("设置headers1", "headers = {}"),
     ("设置超时时间2", "timeout = (2,5)"),
-    ("发送请求3", "send_request('login',data=data)"),
-    ("设置headers4", "headers = {}"),
-    ("设置超时时间5", "timeout = (2,5)"),
-    ("发送请求6", "send_request('login',data=data)")
+    ("发送请求3", "send_request('login',data=data)")
 ]
 
 support_methods = OrderedDict()
@@ -42,7 +39,10 @@ class ResponseObj(object):
             except Exception as e:
                 self.data = resp.text
         else:
-            self.data = resp.text
+            try:
+                self.data = resp.json()
+            except Exception as e:
+                self.data = resp.text
             self.errorMsg = "%s %s" % (resp.status_code, resp.reason)
 
     def __initialize(self,obj):
@@ -95,15 +95,14 @@ apis = APIS("SuimeAPI",apilist)
 
 def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=None):
     resp = None
-
     if not url and not method:
         api = eval("apis.%s" %api_name)
         url = api.url
         method = api.type
 
-    if method == "post":
+    if method.lower() == "post":
         resp = requests.post(url,data=data,headers=headers,timeout=timeout)
-    elif method == "get":
+    elif method.lower() == "get":
         resp = requests.get(url,data=data,headers=headers,timeout=timeout)
     else:
         print("unsupport method:",method)

@@ -1,27 +1,50 @@
 # -*- coding: utf-8 -*-
 from flask import render_template,request,jsonify
-from . import main
+from . import url
+from ..models import db,Api
 from .framework.main import apilist,send_request,support_methods
 import json
 
-@main.route("/apis")
+@url.route("/apis")
 def showapi():
-    return render_template("apis.html",apis=apilist,support_methods=support_methods)
+    apis = Api.query.all()
+    return render_template("apis.html",apis=apis)
 
-@main.route("/testapi",methods=["POST"])
+def stringToJson(data):
+    try:
+        data = eval(data)
+    except Exception as e:
+        if "{" not in data and "}" not in data and "=" in data:
+            args = [line for line in data.split("\n") if line.strip()]
+            data = {}
+            for arg in args:
+                k,v  = arg.split("=")
+                try:
+                    data[k.strip()] = eval(v.strip())
+                except:
+                    data[k.strip()] = v.strip()
+        else:
+            data = {}
+    return data
+
+@url.route("/testapi",methods=["POST"])
 def testapi():
     info = {"result":True,"response":None,"errorMsg":None}
     method = request.form.get("method").lower()
     url = request.form.get("url")
     data = request.form.get("data")
+    headers = request.form.get("headers")
+    data = stringToJson(data)
+    headers = stringToJson(headers)
+
     try:
-        res = send_request("testapi",url=url,method=method,data=data)
+        res = send_request("testapi",url=url,method=method,data=data,headers=headers)
         resp = {
             "statusCode":res.returncode,
             "elapsed":res.elapsed,
             "success":res.success,
             "errorMsg":res.errorMsg,
-            "data":json.dumps(res.data,indent=4),
+            "data":json.dumps(res.data,indent=4,ensure_ascii=False),
             "headers":dict(res.headers),
             "cookies":dict(res.cookies)
         }
@@ -32,23 +55,92 @@ def testapi():
 
     return jsonify(info)
 
-@main.route("/saveapi",methods=["POST"])
+api_template = """
+{% for api in apis %}
+<tr id="apiitem_{{ api.id }}">
+    <td id="apitype_{{ api.id }}">{{ api.type }}</td>
+    <td id="apiname_{{ api.id }}"><a href='javascript:;' onclick="editcase({{ api.id }},'{{ api.type }}','{{ api.name }}','{{ api.url }}')" data-toggle="modal" data-target="#gridSystemModal">{{ api.name }}</a></td>
+    <td id="apiurl_{{ api.id }}">{{ api.url }}</td>
+    <td>
+        <button onclick="delapi({{ api.id }})">删除</button>
+    </td>
+</tr>
+{% endfor %}
+"""
+
+@url.route("/freshapitable")
+def freshapitable():
+    from jinja2 import Template
+    apis = Api.query.all()
+    apitable = Template(api_template).render(
+        apis = apis
+    )
+    return apitable
+
+@url.route("/saveapi",methods=["POST"])
 def saveapi():
-    name = request.form.get("name")
-    url = request.form.get("url")
+    info = {"result":True,"errorMsg":None}
+    name = request.form.get("name").strip()
+    url = request.form.get("url").strip()
     method = request.form.get("method")
-    reqdata = request.form.get("reqdata")
-    respdata = request.form.get("respdata")
-    reqheader = request.form.get("reqheader")
-    respheader = request.form.get("respheader")
+    args = {}
+    if "?" in url:
+        url,argstr = url.split('?')
+        for arg in argstr.split("&"):
+            k,v = arg.split("=")
+            args[k] = v
 
-    print(name,url,method,reqdata,respdata,reqheader,respheader)
-    return "ok"
+    reqdata = request.form.get("reqdata").strip()
+    respdata = request.form.get("respdata").strip()
+    reqheader = request.form.get("reqheader").strip()
+    respheader = request.form.get("respheader").strip()
+    reqdata = stringToJson(reqdata)
+    respdata = stringToJson(respdata)
+    reqheader = stringToJson(reqheader)
+    respheader = stringToJson(respheader)
 
+    try:
+        api = Api(name,url,method,headers=reqheader,reqdata=reqdata if reqdata else args,respdata=respdata)
+        db.session.add(api)
+        db.session.commit()
+    except Exception as e:
+        info = {"result":False,"errorMsg":str(e)}
+    finally:
+        #print(name,url,method,reqdata,respdata,reqheader,respheader)
+        return jsonify(info)
 
-if __name__ == "__main__":
-    app.run("0.0.0.0",port=9999)
+@url.route("/editapi/<int:id>",methods=["POST"])
+def editapi(id):
+    info = {"result":True,"errorMsg":None}
+    api = Api.query.filter_by(id=id).first()
+    if api:
+        name = request.form.get("name").strip()
+        type = request.form.get("type")
+        url = request.form.get("url").strip()
+        api.name = name
+        api.type = type
+        api.url = url
+        db.session.add(api)
+        db.session.commit()
+    else:
+        info = {"result":False,"errorMsg":"该接口不存在或已被删除"}
 
+    return jsonify(info)
+
+@url.route("/delapi/<int:id>",methods=["POST"])
+def delapi(id):
+    info = {"result":True,"errorMsg":None}
+    api = Api.query.filter_by(id=id).first()
+    if api:
+        try:
+            db.session.delete(api)
+            db.session.commit()
+        except Exception as e:
+            info = {"result":False,"errorMsg":str(e)}
+    else:
+        info = {"result":False,"errorMsg":"该接口不存在或已被删除"}
+
+    return jsonify(info)
 
 # data = {
 #     "cellphone":18516042356,

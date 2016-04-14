@@ -11,6 +11,25 @@ class Config:
 
     log_path = os.path.join(os.path.dirname(__file__),"logs")
 
+    case_template = """
+{% for beforecode in beforecodes %}
+{{ beforecode }}
+{% endfor %}
+
+response = send_request('{{api.name}}',url='{{api.url}}',method='{{api.type}}',data={{data}},headers={{headers}},timeout={{timeout}})
+
+{% for code in codes %}
+{{ code }}
+{% endfor %}
+
+
+{% for endcode in endcodes %}
+{{ endcode }}
+{% endfor %}
+
+    """
+
+
     @staticmethod
     def init_app(app):
         pass

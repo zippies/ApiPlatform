@@ -7,14 +7,16 @@ class Api(db.Model):
     name = db.Column(db.String(32))
     url = db.Column(db.String(128))
     type = db.Column(db.String(10))
+    headers = db.Column(db.PickleType)
     reqdata = db.Column(db.PickleType)
     respdata = db.Column(db.PickleType)
     createdtime = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self,name,url,type,reqdata=None,respdata=None):
+    def __init__(self,name,url,type,headers={},reqdata=None,respdata=None):
         self.name = name
         self.url = url
         self.type = type
+        self.headers = headers
         self.reqdata = reqdata
         self.respdata = respdata
 

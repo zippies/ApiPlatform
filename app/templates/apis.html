@@ -37,6 +37,36 @@ active
 
 
 {% block container%}
+<div class="modal fade" id="gridSystemModal" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">修改接口信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon">名 称 </span>
+                    <input type="text" id="edit-name" class="form-control">
+                </div>
+                <div class="input-group rowitem">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default dropdown-toggle" id="edit-method-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">GET <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a class="edit-method-item" id="edit-method-GET">GET</a></li>
+                            <li><a class="edit-method-item" id="edit-method-POST">POST</a></li>
+                        </ul>
+                    </div>
+                    <input id="edit-url" class="form-control" type="text" placeholder="请求地址" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="closemodal" data-dismiss="modal">取消</button>
+                <button type="button" id="saveedit" class="btn btn-primary">保存修改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <ul class="nav nav-tabs">
     <li role="presentation" class="active"><a href="#newapipanel" aria-controls="newapipanel" role="tab" data-toggle="tab">新增接口</a></li>
     <li role="presentation"><a href="#allapipanel" aria-controls="allapipanel" role="tab" data-toggle="tab">所有接口</a></li>
@@ -74,7 +104,7 @@ active
                     <div class="tab-content">
                         <!-- auth begin -->
                         <div role="tabpanel" class="tab-pane" id="req-auth">
-                            <div class="panel-body" id="req-headers-panel" style="height:170px">
+                            <div class="panel-body" id="req-auth-panel" style="height:170px">
                                 no auth
                             </div>
                         </div>
@@ -103,7 +133,7 @@ active
                                     lineNumbers: true,
                                     smartIndent: true,
                                     lineWrapping:true,
-                                    mode: "python"
+                                    mode: "python",
                                 });
                                 requestmirror.setSize("100%","170px")
                             </script>
@@ -119,9 +149,9 @@ active
     <!-- response header set begin-->
             <div class="row rowitem">
                 <div class="col-lg-9">
-                    Response status: <span id="statuscode"></span>
-                    <ul class="nav nav-tabs">
-                        <li role="presentation" class="active"><a href="#resp-body" aria-controls="resp-body" role="tab" data-toggle="tab">Body</a></li>
+                    状态码: <span id="statuscode">&nbsp&nbsp&nbsp</span> 响应时间：<span id="elapsedtime">&nbsp&nbsp&nbsp</span>
+                    <ul class="nav nav-tabs rowitem">
+                        <li role="presentation" class="active"><a href="#resp-body" onclick="refreshbody()" aria-controls="resp-body" role="tab" data-toggle="tab">Body</a></li>
                         <li role="presentation"><a href="#resp-headers" aria-controls="resp-headers" role="tab" data-toggle="tab">Headers</a></li>
                         <li role="presentation"><a href="#resp-cookies" aria-controls="resp-cookies" role="tab" data-toggle="tab">Cookies</a></li>
                     </ul>
@@ -136,7 +166,7 @@ active
                                     mode: "python",
                                     theme: "monokai"
                                 })
-                                respmirror.setSize("100%","170px")
+                                respmirror.setSize("100%","400px")
                             </script>
 
                         </div>
@@ -170,16 +200,11 @@ active
                             <th>请求类型</th>
                             <th>接口名称</th>
                             <th>url地址</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    {% for api in apis %}
-                        <tr>
-                            <td>{{ api.type}}</td>
-                            <td>{{ api.name }}</td>
-                            <td>{{ api.url }}</td>
-                        </tr>
-                    {% endfor %}
+                    <tbody id="apilist">
+
                     </tbody>
                 </table>
             </div>
@@ -195,11 +220,16 @@ active
     {{ super() }}
     <script>
         $(function(){
+            freshapitable()
+
             $("#url").val(sessionStorage.url)
 
             $("#url").on('input',function(e){
                 sessionStorage.url = $(this).val()
             });
+
+            requestmirror.setValue(sessionStorage.reqdata)
+            headermirror.setValue(sessionStorage.headerdata)
 
             if(sessionStorage.method){
                 $("#method-btn").html(sessionStorage.method+' <span class="caret"></span>')
@@ -212,6 +242,41 @@ active
                 sessionStorage.method = $(this).html();
             })
 
+            $(".edit-method-item").click(function(){
+                $("#edit-method-btn").html($(this).html()+' <span class="caret"></span>')
+                sessionStorage.editmethod = $(this).html();
+            })
+
+            $("#saveedit").click(function(){
+                $(this).attr("disabled","disabled").html("正在保存")
+                name = $("#edit-name").val()
+                type = sessionStorage.editmethod
+                url = $("#edit-url").val()
+                id = $(this).attr("name")
+                $.ajax({
+                    url:"/editapi/"+id,
+                    type:"post",
+                    data:{"name":name,"type":type,"url":url},
+                    error:function(request){
+                        $("#closemodal").click()
+                        $("#saveedit").removeAttr("disabled").html("保存修改")
+                        layer.msg(request.status)
+                    },
+                    success:function(data){
+                        $("#closemodal").click()
+                        $("#saveedit").removeAttr("disabled").html("保存修改")
+                        if(data.result){
+                            $("#apitype_"+id).html(type)
+                            name = '<a href="javascript:;" onclick="editcase('+id+',\''+type+'\',\''+name+'\',\''+url+'\')" data-toggle="modal" data-target="#gridSystemModal">'+name+'</a>'
+                            $("#apiname_"+id).html(name)
+                            $("#apiurl_"+id).html(url)
+                            layer.msg("修改成功")
+                        }else{
+                            layer.msg("修改失败:"+data.errorMsg)
+                        }
+                    }
+                })
+            })
         })
 
         function refreshdata(){
@@ -230,6 +295,14 @@ active
             headermirror.refresh();
         }
 
+        function refreshbody(){
+            setTimeout(function(){
+                respmirror.refresh();
+                respmirror.focus();
+            },100);
+            respmirror.refresh();
+        }
+
         function sendrequest(){
             method = sessionStorage.method
             url = $("#url").val()
@@ -239,6 +312,9 @@ active
                 return
             }
             data = requestmirror.getDoc().getValue()
+            headerdata = headermirror.getDoc().getValue()
+            sessionStorage.reqdata = data
+            sessionStorage.headerdata = headerdata
             respmirror.setValue("")
             $("#resp-headers-panel").html("no headers")
             $("#resp-cookies-panel").html("no cookies")
@@ -246,7 +322,7 @@ active
                 url: "/testapi",
                 type: "post",
                 async: true,
-                data: {"method":method,"url":url,"data":data},
+                data: {"method":method,"url":url,"data":data,"headers":headerdata},
                 error: function(request){
                     layer.msg(request.status)
                 },
@@ -256,13 +332,20 @@ active
                         headers = data.response.headers
                         cookies = data.response.cookies
                         statuscode = data.response.statusCode
+                        $("#elapsedtime").html("<span style='color:blue;'>"+ data.response.elapsed +"s</span>")
                         if(data.response.success){
-                            $("#statuscode").html("<span style='color:green;font-weight:bold;'>"+ statuscode +"</span>")
+                            $("#statuscode").html("<span style='color:green'>"+ statuscode +"</span>")
                         }else{
                             $("#statuscode").html("<span style='color:red;font-weight:bold;'>"+ statuscode +"</span>")
                         }
+                        try{
+                            respmirror.setValue(JSON.parse(body))
+                        }catch(e){
+                            respmirror.setValue(body)
+                        }finally{
+                            respmirror.refresh()
+                        }
 
-                        respmirror.setValue(JSON.parse(body))
                         if(headers){
                             $("#resp-headers-panel").html(JSON.stringify(headers))
                         }else{
@@ -292,7 +375,7 @@ active
             }
             reqdata = requestmirror.getDoc().getValue()
             respdata = respmirror.getDoc().getValue()
-            reqheader = $("#req-headers-panel").html()
+            reqheader = headermirror.getDoc().getValue()
             respheader = $("#resp-headers-panel").html()
             layer.prompt(
                 {
@@ -307,12 +390,62 @@ active
                             layer.msg(request.status)
                         },
                         success: function(data){
-                            layer.msg(data)
+                            if(data.result){
+                                freshapitable()
+                                layer.msg("保存成功")
+                            }else{
+                                layer.msg("保存失败:"+data.errorMsg)
+                            }
                         }
                     })
                 }
             );
+        }
 
+        function freshapitable(){
+            $.ajax({
+                url:"/freshapitable",
+                type:"get",
+                error:function(request){
+                    layer.msg(request.status)
+                },
+                success:function(apitable){
+                    $("#apilist").empty().append(apitable)
+                }
+            })
+        }
+
+        function editcase(id,type,name,url){
+            $("#edit-name").val(name)
+            $("#edit-url").val(url)
+            $("#saveedit").attr("name",id)
+            $("#edit-method-"+type).click()
+        }
+
+        function delapi(id){
+            layer.confirm('确定要删除吗?',{
+                btn:['确定','取消']
+            },
+            function(){
+                $.ajax({
+                    url:"/delapi/"+id,
+                    type:"post",
+                    error:function(request){
+                        layer.msg(request.status)
+                    },
+                    success:function(data){
+                        if(data.result){
+                            layer.msg("删除成功")
+                            $("#apiitem_"+id).remove()
+                        }else{
+                            layer.msg("删除失败:"+data.errorMsg)
+                        }
+                    }
+                })
+            },
+            function(){
+                layer.msg("取消删除")
+            })
         }
     </script>
 {% endblock %}

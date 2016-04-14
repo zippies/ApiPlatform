@@ -52,35 +52,23 @@ active
 <!-- newcasepanel begin -->
             <div class="row rowitem">
                 <div class="col-lg-9">
-                    选择测试接口：
-                    <select class="form-control">
-                        <option></option>
-                        <option></option>
-                        <option></option>
-                        <option></option>
-                        <option></option>
-                        <option></option>
-                    </select>
+                    <ul class="list-inline">
+                        <li>
+                            选择测试接口：
+                        </li>
+                        <li>
+                            <select id="apiselect" class="form-control">
+                                <option value="0">请选择接口</option>
+                                {% for api in apis %}
+                                    <option value="{{ api.id }}">{{ api.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </li>
+                        <li><a href="javascript:;" onclick="sendrequest()" class="btn btn-primary">运行</a></li>
+                        <li><a href="javascript:;" onclick="saveapi()" class="btn btn-warning">保存</a></li>
+                    </ul>
                 </div>
                 <div class="col-lg-3">
-                    <a href="javascript:;" onclick="sendrequest()" class="btn btn-primary">请求</a>
-                    <a href="javascript:;" onclick="saveapi()" class="btn btn-warning">保存</a>
-                </div>
-            </div>
-            <div class="row rowitem collapse" id="requestdatadiv">
-                <div class="col-lg-9">
-                    请求参数：
-                    <textarea id="requestdata" name="requestdata" class="form-request-data"></textarea>
-                    <script>
-                        textarea_data = document.getElementById('requestdata')
-                        var requestdata = CodeMirror.fromTextArea(textarea_data, {
-                            indentUnit: 4,
-                            smartIndent: true,
-                            lineWrapping:true,
-                            mode: "python"
-                        });
-                        requestdata.setSize("100%","100px")
-                    </script>
                 </div>
             </div>
             <div class="rowitem">测试脚本：</div>
@@ -88,15 +76,14 @@ active
                 <div class="col-lg-9">
                     <textarea id="testscriptarea"></textarea>
                     <script>
-                        script_data = document.getElementById('testscriptarea')
-                        var scriptdata = CodeMirror.fromTextArea(script_data,{
+                        var scriptmirror = CodeMirror.fromTextArea(document.getElementById('testscriptarea'),{
                             indentUnit: 4,
                             lineNumbers: true,
                             lineWrapping:true,
                             mode: "python",
                             theme: "monokai"
                         })
-                        scriptdata.focus();
+                        scriptmirror.focus();
                     </script>
                 </div>
                 <div class="col-lg-3 list-group">
@@ -107,39 +94,18 @@ active
             </div>
             <div class="row rowitem">
                 <div class="col-lg-9">
-                    Response:
-                    <ul class="nav nav-tabs">
-                        <li role="presentation" class="active"><a href="#body" aria-controls="body" role="tab" data-toggle="tab">Body</a></li>
-                        <li role="presentation"><a href="#headers" aria-controls="headers" role="tab" data-toggle="tab">headers</a></li>
-                        <li role="presentation"><a href="#cookies" aria-controls="cookies" role="tab" data-toggle="tab">cookies</a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane active" id="body">
-                            <textarea id="responsearea"></textarea>
-                            <script>
-                                var respmirror = CodeMirror.fromTextArea(document.getElementById('responsearea'),{
-                                    indentUnit: 4,
-                                    lineNumbers: true,
-                                    lineWrapping:true,
-                                    mode: "python",
-                                    theme: "monokai"
-                                })
-                                respmirror.setSize("100%","150px")
-                            </script>
-
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="headers">
-                            <div class="panel-body" id="headers-panel">
-                                no headers
-                            </div>
-                        </div>
-                        <div role="tabpanel" class="tab-pane" id="cookies">
-                            <div class="panel-body" id="cookies-panel">
-                                no cookies
-                            </div>
-                        </div>
-                    </div>
-
+                    运行结果：
+                    <textarea id="resultarea"></textarea>
+                    <script>
+                        var resultmirror = CodeMirror.fromTextArea(document.getElementById('resultarea'),{
+                            indentUnit: 4,
+                            lineNumbers: true,
+                            lineWrapping:true,
+                            mode: "python",
+                            theme: "monokai"
+                        })
+                        resultmirror.setSize("100%","300px")
+                    </script>
                 </div>
                 <div class="col-lg-3"></div>
             </div>
@@ -156,14 +122,7 @@ active
     </div>
 </div>
 
-
-
-
-
-
 {% endblock %}
-
-
 
 {% block script_index %}
     {{ super() }}
@@ -171,76 +130,47 @@ active
     <script src="/static/bower_components/json/json2.js"></script>
     <script>
         $(function(){
-            $("#url").val(sessionStorage.url)
+            sessionStorage.apis = JSON.stringify({})
 
-            $("#url").on('input',function(e){
-                sessionStorage.url = $(this).val()
-            });
+            {% for api in apis %}
+                tmp = JSON.parse(sessionStorage.apis)
+                tmp[{{ api.id }}] = {"name":"{{ api.name|safe }}","type":"{{ api.type|safe }}","url":"{{ api.url|safe }}","headers":"{{ api.headers|safe }}","reqdata":"{{ api.reqdata|safe }}","respdata":"{{ api.respdata|safe }}"}
+                sessionStorage.apis = JSON.stringify(tmp)
+            {% endfor %}
 
-            if(sessionStorage.method){
-                $("#method-btn").html(sessionStorage.method+' <span class="caret"></span>')
-            }else{
-                sessionStorage.method = "GET"
-            }
+            $("#apiselect").change(function(){
+                scriptmirror.setValue("")
+                api_id = $(this).find("option:selected").attr("value")
+                sessionStorage.testapi_id = api_id
+                try{
+                    choicedapi = JSON.parse(sessionStorage.apis)[api_id]
+                }catch(e){
+                    console.log(e)
+                }
 
-            $(".method-item").click(function(){
-                $("#method-btn").html($(this).html()+' <span class="caret"></span>')
-                sessionStorage.method = $(this).html();
             })
-
         })
 
-        function refreshdata(){
-            setTimeout(function(){
-                requestdata.refresh();
-            },200);
-            requestdata.refresh();
-
-            requestdata.focus();
-        }
-
         function sendrequest(){
-            method = sessionStorage.method
-            console.log(method)
-            url = $("#url").val()
-            if(!url){
-                $("#url").focus()
-                layer.msg("url不允许为空")
+            testscript = scriptmirror.getDoc().getValue()
+            if(!testscript){
+                layer.msg("测试脚本不能为空")
                 return
             }
-            data = requestdata.getDoc().getValue()
-            testscript = scriptdata.getDoc().getValue()
 
             $.ajax({
-                url: "/testapi",
+                url: "/runscript",
                 type: "post",
                 async: true,
-                data: {"method":method,"url":url,"data":data,"script":testscript},
+                data: {"id":sessionStorage.testapi_id,"script":testscript},
                 error: function(request){
                     layer.msg(request.status)
                 },
                 success: function(data){
                     if(data.result){
-                        body = data.response.data
-                        headers = data.response.headers
-                        cookies = data.response.cookies
-                        respmirror.setValue(body)
-                        respmirror.refresh()
-                        if(headers){
-                            $("#headers-panel").html(JSON.stringify(headers))
-                        }else{
-                            $("#headers-panel").html("headers内没有内容")
-                        }
-                        if(cookies){
-                            $("#cookies-panel").html(JSON.stringify(cookies))
-                        }else{
-                            $("#cookies-panel").html("cookies内没有内容")
-                        }
-
+                        layer.msg("运行成功")
                     }else{
                         layer.msg("请求失败:"+ data.errorMsg)
-                        respmirror.setValue(data.errorMsg)
-                        respmirror.refresh()
                     }
                 }
             })
