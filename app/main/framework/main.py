@@ -3,6 +3,13 @@ from collections import OrderedDict,namedtuple
 from . import web_apidoc
 import json,requests
 
+class CheckError(Exception):
+	def __init__(self,info):
+		self.info = info
+
+	def __str__(self):
+		return self.info
+
 support_methodlist = [
     ("设置headers","headers = {}"),
     ("设置超时时间","timeout = (2,5)"),
@@ -41,9 +48,13 @@ class ResponseObj(object):
         else:
             try:
                 self.data = resp.json()
+                self.__initialize(resp.json())
             except Exception as e:
                 self.data = resp.text
             self.errorMsg = "%s %s" % (resp.status_code, resp.reason)
+
+    def __repr__(self):
+        return "<ResponseObj:%s>" %self.name
 
     def __initialize(self,obj):
         newobj = OrderedDict()

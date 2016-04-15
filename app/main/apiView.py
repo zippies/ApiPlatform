@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from flask import render_template,request,jsonify
-from . import url
-from ..models import db,Api
 from .framework.main import apilist,send_request,support_methods
+from flask import render_template,request,jsonify
+from ..models import db,Api
+from . import url
 import json
 
 @url.route("/apis")
@@ -59,7 +59,7 @@ api_template = """
 {% for api in apis %}
 <tr id="apiitem_{{ api.id }}">
     <td id="apitype_{{ api.id }}">{{ api.type }}</td>
-    <td id="apiname_{{ api.id }}"><a href='javascript:;' onclick="editcase({{ api.id }},'{{ api.type }}','{{ api.name }}','{{ api.url }}')" data-toggle="modal" data-target="#gridSystemModal">{{ api.name }}</a></td>
+    <td id="apiname_{{ api.id }}"><a href='javascript:;' onclick="editapi({{ api.id }},'{{ api.type }}','{{ api.name }}','{{ api.url }}')" data-toggle="modal" data-target="#gridSystemModal">{{ api.name }}</a></td>
     <td id="apiurl_{{ api.id }}">{{ api.url }}</td>
     <td>
         <button onclick="delapi({{ api.id }})">删除</button>

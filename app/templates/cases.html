@@ -10,6 +10,8 @@
     {{ super() }}
     <link rel="stylesheet" href="/static/bower_components/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="/static/bower_components/codemirror/theme/monokai.css">
+    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/blackboard.css">
+    <link rel="stylesheet" href="/static/bower_components/codemirror/theme/night.css">
     <style>
         .form-request-data{
             width:100%;
@@ -41,6 +43,40 @@ active
 
 
 {% block container%}
+<div class="modal fade bs-example-modal-lg" id="gridSystemModal" role="dialog" aria-labelledby="gridSystemModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel">修改用例信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <span class="input-group-addon">名 称 </span>
+                    <input type="text" id="edit-name" class="form-control">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">描 述 </span>
+                    <input type="text" id="edit-desc" class="form-control">
+                </div>
+                <textarea id="editcontent"></textarea>
+                <script>
+                    var editmirror = CodeMirror.fromTextArea(document.getElementById('editcontent'),{
+                        indentUnit: 4,
+                        lineNumbers: true,
+                        mode: "python"
+                    })
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="closemodal" data-dismiss="modal">取消</button>
+                <button type="button" id="saveedit" class="btn btn-primary">保存修改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 
 <ul class="nav nav-tabs">
     <li role="presentation" class="active"><a href="#newcasepanel" aria-controls="newcasepanel" role="tab" data-toggle="tab">新增测试用例</a></li>
@@ -64,11 +100,19 @@ active
                                 {% endfor %}
                             </select>
                         </li>
-                        <li><a href="javascript:;" onclick="sendrequest()" class="btn btn-primary">运行</a></li>
-                        <li><a href="javascript:;" onclick="saveapi()" class="btn btn-warning">保存</a></li>
+                        <li><a href="javascript:;" onclick="sendrequest('run')" class="btn btn-primary">运行</a></li>
+                        <li><a href="javascript:;" onclick="sendrequest('save')" class="btn btn-warning">保存</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">
+                </div>
+            </div>
+            <div class="row rowitem">
+                <div class="col-lg-3">
+                    <input type="text" id="casename" class="form-control" placeholder="用例名称">
+                </div>
+                <div class="col-lg-6">
+                    <input type="text" id="casedesc" class="form-control" placeholder="检查点描述">
                 </div>
             </div>
             <div class="rowitem">测试脚本：</div>
@@ -80,8 +124,7 @@ active
                             indentUnit: 4,
                             lineNumbers: true,
                             lineWrapping:true,
-                            mode: "python",
-                            theme: "monokai"
+                            mode: "python"
                         })
                         scriptmirror.focus();
                     </script>
@@ -94,7 +137,8 @@ active
             </div>
             <div class="row rowitem">
                 <div class="col-lg-9">
-                    运行结果：
+                    <div>运行结果：</div>
+                    <span id="passcount" style="font-size:13px;color:green;"></span>&nbsp&nbsp<span id="failcount" style="font-size:13px;color:red;"></span>
                     <textarea id="resultarea"></textarea>
                     <script>
                         var resultmirror = CodeMirror.fromTextArea(document.getElementById('resultarea'),{
@@ -102,9 +146,9 @@ active
                             lineNumbers: true,
                             lineWrapping:true,
                             mode: "python",
-                            theme: "monokai"
+                            theme:"monokai"
                         })
-                        resultmirror.setSize("100%","300px")
+                        resultmirror.setSize("100%","500px")
                     </script>
                 </div>
                 <div class="col-lg-3"></div>
@@ -116,7 +160,19 @@ active
     <div role="tabpanel" class="tab-pane" id="allcasepanel">
         <div class="panel-body">
 <!-- allcasepanel begin-->
-
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用例名称</th>
+                        <th>检查点描述</th>
+                        <th>用例属于接口</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="caselist">
+                </tbody>
+            </table>
 <!-- allcasepanel end-->
         </div>
     </div>
@@ -130,16 +186,13 @@ active
     <script src="/static/bower_components/json/json2.js"></script>
     <script>
         $(function(){
-            sessionStorage.apis = JSON.stringify({})
+            freshcasetable()
 
-            {% for api in apis %}
-                tmp = JSON.parse(sessionStorage.apis)
-                tmp[{{ api.id }}] = {"name":"{{ api.name|safe }}","type":"{{ api.type|safe }}","url":"{{ api.url|safe }}","headers":"{{ api.headers|safe }}","reqdata":"{{ api.reqdata|safe }}","respdata":"{{ api.respdata|safe }}"}
-                sessionStorage.apis = JSON.stringify(tmp)
-            {% endfor %}
+            $(this).find("option[value="+sessionStorage.testapi_id+"]").attr("selected",true)
+
+            scriptmirror.setValue(JSON.parse(sessionStorage.testscript))
 
             $("#apiselect").change(function(){
-                scriptmirror.setValue("")
                 api_id = $(this).find("option:selected").attr("value")
                 sessionStorage.testapi_id = api_id
                 try{
@@ -151,26 +204,110 @@ active
             })
         })
 
-        function sendrequest(){
+        function sendrequest(purpose){
             testscript = scriptmirror.getDoc().getValue()
+            sessionStorage.testscript = JSON.stringify(testscript)
+
+            if(purpose == 'save' && !$("#casename").val()){
+                layer.msg("用例名不能为空")
+                $("#casename").focus()
+                return
+            }
+
+            resultmirror.setValue("")
             if(!testscript){
                 layer.msg("测试脚本不能为空")
                 return
             }
 
             $.ajax({
-                url: "/runscript",
+                url: "/sendcaserequest",
                 type: "post",
                 async: true,
-                data: {"id":sessionStorage.testapi_id,"script":testscript},
+                data: {"id":sessionStorage.testapi_id,"script":testscript,"purpose":purpose,"name":$("#casename").val(),"desc":$("#casedesc").val()},
                 error: function(request){
                     layer.msg(request.status)
                 },
                 success: function(data){
                     if(data.result){
-                        layer.msg("运行成功")
+                        if(purpose == "run"){
+                            resultmirror.setValue(data.messages)
+                            $("#passcount").html("成功:"+data.success)
+                            $("#failcount").html("失败:"+data.failed)
+                        }else{
+                            freshcasetable()
+                            layer.msg("保存成功")
+                            $("#passcount").html("")
+                            $("#failcount").html("")
+
+                        }
                     }else{
                         layer.msg("请求失败:"+ data.errorMsg)
+                    }
+                }
+            })
+        }
+
+        function freshcasetable(){
+            $.ajax({
+                url:"/freshcasetable",
+                type:"get",
+                error:function(request){
+                    layer.msg(request.status)
+                },
+                success:function(casetable){
+                    $("#caselist").empty().append(casetable)
+                }
+            })
+        }
+
+        function delcase(id){
+            layer.confirm('确定要删除吗?',{
+                btn:['确定','取消']
+            },
+            function(){
+                $.ajax({
+                    url:"/delcase/"+id,
+                    type:"post",
+                    error:function(request){
+                        layer.msg(request.status)
+                    },
+                    success:function(data){
+                        if(data.result){
+                            layer.msg("删除成功")
+                            $("#caseitem_"+id).remove()
+                        }else{
+                            layer.msg("删除失败:"+data.errorMsg)
+                        }
+                    }
+                })
+            },
+            function(){
+                layer.msg("取消删除")
+            })
+        }
+
+        function refreshcontent(){
+            setTimeout(function(){
+                editmirror.refresh();
+                editmirror.focus();
+            },200);
+            editmirror.refresh();
+        }
+
+
+        function editcase(caseid){
+            $.ajax({
+                url:"/getcaseinfo/"+caseid,
+                type:"get",
+                success:function(data){
+                    if(data.result){
+                        $("#edit-name").val(data.name)
+                        $("#edit-desc").val(data.desc)
+                        refreshcontent()
+                        editmirror.setValue(data.content)
+                    }else{
+                        layer.msg("获取用例数据失败")
                     }
                 }
             })

@@ -22,5 +22,6 @@ def dbdrop():
 	db.drop_all()
 	print('ok')
 
+
 if __name__ == '__main__':
 	manager.run()
