@@ -2,6 +2,13 @@
 
 {% block css_index %}
     {{ super() }}
+    <link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css"/>
+    <style>
+        .title:hover{
+            cursor:pointer;
+            border:1px solid black;
+        }
+    </style>
 {% endblock %}
 
 {% block nav %}
@@ -20,11 +27,64 @@ active
 
 
 {% block container%}
-    <h1>hello,jobs</h1>
+<button class="btn btn-primary" data-toggle="collapse" data-target="#newjobdiv" aria-expanded="false" aria-controls="newjobdiv">
+新增测试集
+</button>
+<div class="collapse" id="newjobdiv">
+    <div class="well">
+        <select name="" id="choiceapis" multiple="multiple">
+            {% for api in apis %}
+                <optgroup label="{{ api.name }}">
+                    {% for case in api.apicases %}
+                        <option value="{{ case.id }}">{{ case.name }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+
+
+
+
+
+<ul id="songListEdit">
+    {% for api in apis %}
+        <li><span class="num">01</span><span class="title">{{ api.name }}</span></li>
+    {% endfor %}
+</ul>
 {% endblock %}
 
 
 
 {% block script_index %}
     {{ super() }}
+    <script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+    <script src="/static/js/jquery.sortable.js"></script>
+    <script>
+
+
+        $(document).ready(function() {
+            $('#choiceapis').multiselect({
+                enableCollapsibleOptGroups: true,
+                buttonWidth: '400px',
+                enableFiltering: true
+            });
+        });
+
+        function changeNum(){
+                $("#songListEdit li").each(function(){
+                    var indexNum=$("#songListEdit li").index(this);
+                    var a=(indexNum+1)>9?(indexNum+1):("0"+(indexNum+1))
+                    $(this).find(".num").text(a)
+              })
+        }
+        $(function(){
+
+        $('#songListEdit').sortable().bind('sortupdate',function() {
+            changeNum();
+                });
+        });
+    </script>
 {% endblock %}

@@ -14,7 +14,7 @@ def stringToJson(data):
     try:
         data = eval(data)
     except Exception as e:
-        if "{" not in data and "}" not in data and "=" in data:
+        if "{" not in data and "}" not in data and "=" in data and "Error" not in data:
             args = [line for line in data.split("\n") if line.strip()]
             data = {}
             for arg in args:
