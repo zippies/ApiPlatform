@@ -100,7 +100,6 @@ active
         })
 
         function freshsuits(){
-
             $.ajax({
                 url:"/freshsuits",
                 type:"get",
@@ -137,7 +136,7 @@ active
                                             }
                                         }
                                     })
-                                    localStorage.setItem(sortable.options.group, order.join('|'));
+                                    //localStorage.setItem(sortable.options.group, order.join('|'));
                                 }
                             }
                         });
@@ -171,15 +170,13 @@ active
                                                 }
                                             }
                                         })
-                                        localStorage.setItem(sortable.options.group, order.join('|'));
+                                        //localStorage.setItem(sortable.options.group, order.join('|'));
                                     }
                                 }
                             });
                         })
                     })
                 }
-
-
             })
         }
 
@@ -205,6 +202,19 @@ active
                 layer.msg("取消删除")
             })
 
+        }
+
+        function runsuit(id){
+            $.ajax({
+                url:"/runsuit/"+id,
+                success:function(data){
+                    if(data.result){
+                        layer.msg("运行成功")
+                    }else{
+                        layer.msg("运行失败:"+data.errorMsg)
+                    }
+                }
+            })
         }
     </script>
 {% endblock %}

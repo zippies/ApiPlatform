@@ -68,7 +68,7 @@ suit_template = \
         {% endfor %}
         </div>
         <ul class="list-inline list-group">
-            <li><button>运行</button></li>
+            <li><button onclick="runsuit({{suit.id}})">运行</button></li>
             <li><button onclick="delsuit({{suit.id}})">删除</button></li>
         </ul>
     </div>
@@ -81,7 +81,8 @@ suit_template = \
 def freshsuits():
     data = {"suits":None,"orders":None}
     suits = TestSuit.query.all()
-
+    for suit in suits:
+        print("show",suit.id,suit.orders)
     s = Template(suit_template).render(
         suits = suits
     )
@@ -121,6 +122,13 @@ def updatesuitorder(suitid):
             for apiid in order:
                 neworder.append(getitemfromorders(apiid,suit.orders))
             suit.orders = neworder
+            # testcases = []
+            # for apiitem in neworder:
+            #     api = Api.query.filter_by(id=int(apiitem["id"])).first()
+            #     if api:
+            #         for caseitem in apiitem["cases"]:
+            #             testcases.append([api.name, caseitem["name"]])
+            # print(testcases)
             db.session.add(suit)
             db.session.commit()
         else:
@@ -146,9 +154,30 @@ def updatecaseorder(suitid,apiid):
             else:
                 neworder.append(item)
 
+        print("before",suit.id,suit.orders)
         suit.orders = neworder
+        print("after",suit.id,suit.orders)
         db.session.add(suit)
         db.session.commit()
+        print("real after",suitid, suit.orders)
     else:
         info = {"result":False,"errorMsg":"该测试集不存在或已被删除"}
+    return jsonify(info)
+
+@url.route("/runsuit/<int:id>")
+def runsuit(id):
+    info = {"result":True,"errorMsg":None}
+    suit = TestSuit.query.filter_by(id=id).first()
+    testcases = []
+    if suit:
+        for apiitem in suit.orders:
+            api = Api.query.filter_by(id=int(apiitem["id"])).first()
+            if api:
+                for caseitem in apiitem["cases"]:
+                    testcases.append([api.name,caseitem["name"]])
+            else:
+                pass
+    else:
+        info = {"result":False,"errorMsg":"该测试集不存在或已被删除"}
+    print(testcases)
     return jsonify(info)
