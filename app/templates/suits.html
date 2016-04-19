@@ -211,10 +211,15 @@ active
         }
 
         function runsuit(id){
+            var $btn = $("#runsuit_"+id).button('loading')
+            $("#result_"+id).empty()
             $.ajax({
                 url:"/runsuit/"+id,
                 success:function(data){
                     if(data.result){
+                        console.log(data.info)
+                        $btn.button("reset")
+                        $("#result_"+id).append(data.info).show()
                         layer.msg("运行成功")
                     }else{
                         layer.msg("运行失败:"+data.errorMsg)

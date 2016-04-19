@@ -10,6 +10,7 @@ logger = Logger('{{suit.name}}/{{api.name}}_{{ case.case_name }}')
 info = {
     "name":'{{ case.case_name }}',
     "desc":'{{ case.case_desc }}',
+    "apiname":'{{ api.name }}',
     "logpath":'{{ suit.name }}/{{ api.name }}_{{ case.case_name }}.log',
     "passCheck":[],
     "failCheck":[]

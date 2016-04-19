@@ -72,8 +72,13 @@ suit_template = \
         {% endfor %}
         </div>
         <ul class="list-inline list-group">
-            <li><button onclick="runsuit({{suit.id}})">运行</button></li>
-            <li><button onclick="delsuit({{suit.id}})">删除</button></li>
+            <li>
+                <button id="runsuit_{{suit.id}}" onclick="runsuit({{suit.id}})" data-loading-text="正在运行" autocomplete="off" class="btn btn-default">运行</button>
+            </li>
+            <li><button onclick="delsuit({{suit.id}})" class="btn btn-default">删除</button></li>
+            <div class="well" id="result_{{ suit.id }}" style="display:none">
+
+            </div>
         </ul>
     </div>
 </div>
@@ -161,7 +166,7 @@ def updatecaseorder(suitid,apiid):
 
 @url.route("/runsuit/<int:id>")
 def runsuit(id):
-    info = {"result":True,"errorMsg":None}
+    info = {"result":True,"info":None,"errorMsg":None}
     suit = TestSuit.query.filter_by(id=id).first()
     testcases = []
     if suit:
@@ -185,7 +190,7 @@ def runsuit(id):
     suit.status = 1
     db.session.add(suit)
     db.session.commit()
-    print(11111,suit.status)
+
     for case in testcases:
         actionParser = parseScript(case["case_content"])
         c = Template(case_template).render(
@@ -212,5 +217,30 @@ def runsuit(id):
     db.session.commit()
 
     pprint(suit.result)
-    print(suit.status)
+    s = Template(result_template).render(result=suit.result)
+    info["info"] = s
+    print(s)
     return jsonify(info)
+
+result_template = """
+<div>测试结果:{% if result.failed|length > 0 %}<span style="color:red">失败</span>{% else %}<span style="color:green">成功</span>{% endif %}</div>
+<div>
+失败用例：
+    <ul style="margin-left:20px">
+    {% for api in result.failed %}
+        <li>
+        {{ api.name }}
+
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+<div>
+成功用例：
+    <ul style="margin-left:20px">
+    {% for api in result.success %}
+        <li>{{ api.name }}</li>
+    {% endfor %}
+    </ul>
+</div>
+"""
