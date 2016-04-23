@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block css_index %}
+    {{ super() }}
+	<style>
+		.formitem {
+			margin-top:5px;
+			width:100%;
+		}
+		#frame {
+			border-radius:15px;
+			background:#F0FFFF;
+			padding:30px;
+			text-align:center;
+		}
+		.input-group-addon{
+		    width:90px
+		}
+		.require{
+		    color:#BC8F8F;
+		}
+	</style>
+
+{% endblock %}
+{% block nav %}
+    {{ super() }}
+{% endblock %}
+
+{% block script_index %}
+    {{ super() }}
+    <script>
+        function queryvalid(value){
+            console.log(value);
+        }
+    </script>
+{% endblock %}
+
+
+{% block container%}
+<div class="col-lg-12">
+	<div class="col-lg-2"></div>
+	<div class="col-lg-8" id="frame">
+		<form action="/register" method="post">
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require">*</span>&nbsp手机号:</span>
+				<input type="text" name="phonenum" placeholder="请输入手机号" class="form-control" onblur="queryvalid(this.value)" oninvalid="setCustomValidity('T T 请填写正确的手机号');" pattern="(\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$" required>
+			</div>
+
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require">*</span>&nbsp昵&nbsp&nbsp&nbsp&nbsp称:</span>
+				<input type="text" name="nickname" placeholder="请输入昵称" class="form-control" required>
+			</div>
+
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require"></span>&nbsp邮&nbsp&nbsp&nbsp&nbsp箱:</span>
+				<input type="email" name="email" class="form-control" oninvalid="setCustomValidity('T T 邮箱格式不正确');">
+			</div>
+
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require"></span>&nbsp性&nbsp&nbsp&nbsp&nbsp别:</span>
+				<label class="radio-inline">
+					<input type="radio" name="sex" id="sex_1" value="帅哥"> 帅哥
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="sex" id="sex_2" value="美女"> 美女
+				</label>
+			</div>
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require">*</span>&nbsp密&nbsp&nbsp&nbsp&nbsp码:</span>
+				<input type="password" autocomplete="off" placeholder="请输入密码" name="password" class="form-control" required>
+			</div>
+
+			<div class="formitem">
+				<button class="form-control btn btn-primary" style="width:200px">提交注册</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-lg-2"></div>
+</div>
+{% endblock %}

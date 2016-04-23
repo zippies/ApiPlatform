@@ -45,16 +45,16 @@ active
                         {% endfor %}
                     </select>
                 </li>
+                <li><a href="javascript:;" name="run" onclick="sendrequest(this.name)" class="btn btn-primary">运行</a></li>
+                <li><a href="javascript:;" name="save" id="save" onclick="sendrequest(this.name)" class="btn btn-warning">保存</a></li>
             </ul>
         </div>
         <div class="rowitem">
             <ul class="list-inline">
                 <li><label>用例名称:</label></li>
-                <li><input type="text" id="casename" class="form-control" placeholder="用例名称"></li>
+                <li><input type="text" id="casename" maxlength="30" class="form-control" placeholder="用例名称"></li>
                 <li><label>检查点描述:</label></li>
-                <li><input type="text" id="casedesc" class="form-control" placeholder="检查点描述"></li>
-                <li><a href="javascript:;" name="run" onclick="sendrequest(this.name)" class="btn btn-info">运行</a></li>
-                <li><a href="javascript:;" name="save" id="save" onclick="sendrequest(this.name)" class="btn btn-info">保存</a></li>
+                <li><input type="text" id="casedesc" maxlength="100" class="form-control" placeholder="检查点描述"></li>
             </ul>
         </div>
         <div class="rowitem">测试脚本：</div>
@@ -76,7 +76,7 @@ response.elapsed < 0.1
                     smartIndent: true,
                     lineWrapping:true,
                     mode: "python",
-                    theme:"monokai"
+                    theme:"abcdef"
                 })
                 scriptmirror.setSize("100%","300px")
                 scriptmirror.focus()
@@ -93,21 +93,21 @@ response.elapsed < 0.1
                     lineNumbers: true,
                     lineWrapping:true,
                     mode: "python",
-                    theme:"monokai"
+                    theme:"abcdef"
                 })
                 resultmirror.setSize("100%","500px")
             </script>
         </div>
     </div>
 
-    <div class="col-lg-4" style="padding:5px;min-height:200px;max-height:800px;overflow:scroll">
+    <div class="col-lg-4" style="padding:5px;max-height:800px;overflow-y:scroll">
 <!-- allcasepanel begin-->
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>用例名称</th>
-                    <th>归属接口</th>
-                    <th></th>
+                    <th class="col-lg-7">用例名称</th>
+                    <th class="col-lg-4">归属接口</th>
+                    <th class="col-lg-1"></th>
                 </tr>
             </thead>
             <tbody id="caselist">
@@ -139,7 +139,7 @@ response.elapsed < 0.1
             testscript = scriptmirror.getDoc().getValue()
             sessionStorage.testscript = JSON.stringify(testscript)
 
-            if(purpose == "run"){
+            if(purpose != "run"){
                 if($("#apiselect").find("option:selected").val() == 0){
                     layer.msg("请选择接口")
                     $("#apiselect").focus()
@@ -149,7 +149,11 @@ response.elapsed < 0.1
                     return
                 }
             }else{
-                if(!$("#casename").val()){
+                if($("#apiselect").find("option:selected").val() == 0){
+                    layer.msg("请选择接口")
+                    $("#apiselect").focus()
+                    return
+                }else if(!$("#casename").val()){
                     layer.msg("用例名不能为空")
                     $("#casename").focus()
                     return

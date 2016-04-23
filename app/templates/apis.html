@@ -39,7 +39,7 @@ active
             <div class="modal-body">
                 <div class="input-group">
                     <span class="input-group-addon">名 称 </span>
-                    <input type="text" id="edit-name" class="form-control">
+                    <input type="text" id="edit-name" maxlength="30" class="form-control">
                 </div>
                 <div class="input-group rowitem">
                     <div class="input-group-btn">
@@ -49,7 +49,7 @@ active
                             <li><a class="edit-method-item" id="edit-method-POST">POST</a></li>
                         </ul>
                     </div>
-                    <input id="edit-url" class="form-control" type="text" placeholder="请求地址" required>
+                    <input id="edit-url" class="form-control" maxlength="120" type="text" placeholder="请求地址" required>
                 </div>
             </div>
             <div class="modal-footer">
@@ -111,7 +111,7 @@ active
                                     smartIndent: true,
                                     lineWrapping:true,
                                     mode: "python",
-                                    theme: "monokai"
+                                    theme: "abcdef"
                                 })
                                 headermirror.setSize("100%","170px")
                             </script>
@@ -127,7 +127,7 @@ active
                                     smartIndent: true,
                                     lineWrapping:true,
                                     mode: "python",
-                                    theme: "monokai"
+                                    theme: "abcdef"
                                 });
                                 requestmirror.setSize("100%","170px")
                             </script>
@@ -158,7 +158,7 @@ active
                                     lineNumbers: true,
                                     lineWrapping:true,
                                     mode: "python",
-                                    theme: "monokai"
+                                    theme: "abcdef"
                                 })
                                 respmirror.setSize("100%","400px")
                             </script>
@@ -270,7 +270,11 @@ active
                             $("#apiurl_"+id).html(url)
                             layer.msg("修改成功")
                         }else{
-                            layer.msg("修改失败:"+data.errorMsg)
+                            if(data.errorMsg){
+                                layer.msg("修改失败:"+data.errorMsg)
+                            }else{
+                                layer.msg("该功能需登录后才能使用")
+                            }
                         }
                     }
                 })
@@ -392,7 +396,12 @@ active
                                 freshapitable()
                                 layer.msg("保存成功")
                             }else{
-                                layer.msg("保存失败:"+data.errorMsg)
+                                if(data.errorMsg){
+                                    layer.msg("保存失败:"+data.errorMsg)
+                                }else{
+                                    layer.msg("该功能需要登录后才能使用")
+                                }
+
                             }
                         }
                     })

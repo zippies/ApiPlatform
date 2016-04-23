@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 from .framework.main import send_request
 from .framework.methods import *
-from flask import render_template,request,jsonify
+from flask.ext.login import current_user,login_required
+from flask import render_template,request,jsonify,abort
+from jinja2 import Template
 from ..models import db,Api
 from . import url
 import json
 
 @url.route("/apis")
 def showapi():
-    apis = Api.query.all()
+    apis = Api.query.filter_by(userid=current_user.id).all() if hasattr(current_user, "nickname") else []
     return render_template("apis.html",apis=apis)
 
 def stringToJson(data):
@@ -71,14 +73,14 @@ api_template = """
 
 @url.route("/freshapitable")
 def freshapitable():
-    from jinja2 import Template
-    apis = Api.query.all()
+    apis = Api.query.filter_by(userid=current_user.id).all() if hasattr(current_user,"nickname") else []
     apitable = Template(api_template).render(
         apis = apis
     )
     return apitable
 
 @url.route("/saveapi",methods=["POST"])
+@login_required
 def saveapi():
     info = {"result":True,"errorMsg":None}
     name = request.form.get("name").strip()
@@ -101,7 +103,7 @@ def saveapi():
     respheader = stringToJson(respheader)
 
     try:
-        api = Api(name,url,method,headers=reqheader,reqdata=reqdata if reqdata else args,respdata=respdata)
+        api = Api(name,url,method,current_user.id,headers=reqheader,reqdata=reqdata if reqdata else args,respdata=respdata)
         db.session.add(api)
         db.session.commit()
     except Exception as e:
@@ -114,6 +116,8 @@ def editapi(id):
     info = {"result":True,"errorMsg":None}
     api = Api.query.filter_by(id=id).first()
     if api:
+        if api.userid != current_user.id:
+            abort(401)
         name = request.form.get("name").strip()
         type = request.form.get("type")
         url = request.form.get("url").strip()
@@ -132,6 +136,8 @@ def delapi(id):
     info = {"result":True,"errorMsg":None}
     api = Api.query.filter_by(id=id).first()
     if api:
+        if api.userid != current_user.id:
+            abort(401)
         try:
             db.session.delete(api)
             db.session.commit()

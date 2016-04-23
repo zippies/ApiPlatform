@@ -3,6 +3,7 @@ from flask import render_template,request,jsonify,session
 from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.methods import *
 from ..models import db,Api,ApiCase
+from flask.ext.login import login_required
 from jinja2 import Template
 from . import url
 
@@ -19,6 +20,7 @@ caseitem_template = """
 """
 
 @url.route("/cases")
+@login_required
 def cases():
     session["result"] = {
         "ok":None,
@@ -31,6 +33,7 @@ def cases():
     return render_template("cases.html",apis=apis,cases=cases)
 
 @url.route("/sendcaserequest",methods=["POST"])
+@login_required
 def sendcaserequest():
     import time
 
@@ -106,15 +109,17 @@ def sendcaserequest():
     return jsonify(info)
 
 @url.route("/freshcasetable")
+@login_required
 def freshcasetable():
     from jinja2 import Template
-    case_api = [(case,Api.query.filter_by(id=case.api_id).first()) for case in ApiCase.query.all()]
+    case_api = [(case,Api.query.filter_by(id=case.apiid).first()) for case in ApiCase.query.all()]
     casetable = Template(caseitem_template).render(
         case_api = case_api
     )
     return casetable
 
 @url.route("/delcase/<int:id>",methods=["POST"])
+@login_required
 def delcase(id):
     info = {"result":True,"errorMsg":None}
     case = ApiCase.query.filter_by(id=id).first()
@@ -130,12 +135,13 @@ def delcase(id):
     return jsonify(info)
 
 @url.route("/getcaseinfo/<int:id>")
+@login_required
 def getcaseinfo(id):
     info = {"result":True,"api_id":None,"name":None,"desc":None,"content":None}
     try:
         case = ApiCase.query.filter_by(id=id).first()
         if case:
-            info["api_id"] = case.api_id
+            info["api_id"] = case.apiid
             info["content"] = case.content
             info["name"] = case.name
             info["desc"] = case.desc

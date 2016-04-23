@@ -9,25 +9,30 @@
             <link href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
             <link href="/static/css/templatemo-style.css" rel="stylesheet">
             <link rel="stylesheet" href="/static/bower_components/codemirror/lib/codemirror.css">
-            <link rel="stylesheet" href="/static/bower_components/codemirror/theme/monokai.css">
+            <link rel="stylesheet" href="/static/bower_components/codemirror/theme/abcdef.css">
             {% endblock %}
         <script src="/static/bower_components/codemirror/lib/codemirror.js"></script>
         <script src="/static/bower_components/codemirror/mode/python/python.js"></script>
+        <style>
+            #maincontent{
+                background:url("static/imgs/mainback.png")
+            }
+        </style>
         {% endblock %}
     </head>
     <body>
         <!-- container all -->
         {% block nav %}
-        <div class="templatemo-flex-row">
+        <div class="templatemo-flex-row" id="navdiv">
             <div class="templatemo-sidebar">
                 <header class="templatemo-site-header">
                     <h1>接口测试平台</h1>
                 </header>
                 <!-- Search box -->
-                <form class="templatemo-search-form" role="search">
+                <form class="templatemo-search-form" action="http://www.baidu.com/s" target="_blank" role="search">
                     <div class="input-group">
                         <button type="submit" class="fa fa-search"></button>
-                        <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+                        <input type="text" class="form-control" placeholder="Search by Baidu" name="wd" id="srch-term">
                     </div>
                 </form>
                 <nav class="templatemo-left-nav">
@@ -39,13 +44,40 @@
                 </nav>
             </div>
             <!-- Main content -->
-            <div class="templatemo-content col-1 light-gray-bg">
-                <div id="main-container" class="templatemo-content-container">
+            <div id="maincontent" class="templatemo-content col-1 light-gray-bg">
+                <div style="height:40px;line-height:40px;">
+                    {% if current_user.is_authenticated %}
+                        <div class="btn-group pull-right" style="margin-right:20px">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span style="color:black">hi,{{ current_user.nickname }}</span><span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/modifyinfo">资料设置</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/logout">注销登录</a></li>
+                            </ul>
+                        </div>
+                    {%else%}
+                        <div class="pull-right" style="margin-right:20px"><a href="/login"><span class="glyphicon glyphicon-king"></span> 登 录</a></div>
+                    {% endif %}
+                </div>
+                <div class="templatemo-content-container">
+                    {% for message in get_flashed_messages() %}
+                        {% if message.type == 'error' %}
+                            <div class="alert alert-warning alert-dismissible fade in" role="alert">
+                        {% else %}
+                            <div class="alert alert-success alert-dismissible fade in" role="alert">
+                        {% endif %}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                <h7>
+                                    <span class="glyphicon glyphicon-grain" style="align:center"> {{ message.message }}</span>
+                                </h7>
+                            </div>
+                    {% endfor %}
                     {% block container %}
                     {% endblock %}
                 </div>
             </div>
             <!-- End of Main content -->
+            </div>
         </div>
         {% endblock %}
         <!-- End of container all -->

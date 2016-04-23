@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block css_index %}
+    {{ super() }}
+	<style>
+		.formitem {
+			margin-top:5px;
+			width:100%;
+		}
+		#frame {
+			border-radius:15px;
+			background:#F0FFFF;
+			padding:30px;
+			text-align:center;
+		}
+		.input-group-addon{
+		    width:90px
+		}
+		.require{
+		    color:#BC8F8F;
+		}
+	</style>
+
+{% endblock %}
+{% block nav %}
+    {{ super() }}
+{% endblock %}
+
+{% block script_index %}
+    {{ super() }}
+    <script>
+        function queryvalid(value){
+            console.log(value);
+        }
+    </script>
+{% endblock %}
+
+
+{% block container%}
+<div class="col-lg-12">
+	<div class="col-lg-2"></div>
+	<div class="col-lg-8" id="frame">
+		<form action="/modifyinfo" method="post">
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require">*</span>&nbsp昵&nbsp&nbsp&nbsp&nbsp称:</span>
+				<input type="text" name="nickname" value="{{ current_user.nickname }}" class="form-control">
+			</div>
+
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require"></span>&nbsp邮&nbsp&nbsp&nbsp&nbsp箱:</span>
+				<input type="email" name="email" value="{{ current_user.email }}" class="form-control" oninvalid="setCustomValidity('T T 邮箱格式不正确');">
+			</div>
+
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require"></span>&nbsp性&nbsp&nbsp&nbsp&nbsp别:</span>
+				<label class="radio-inline">
+					<input type="radio" name="sex" id="sex_1" value="帅哥" {% if current_user.sex == '帅哥' %}checked="checked"{% endif %}> 帅哥
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="sex" id="sex_2" value="美女" {% if current_user.sex == '美女' %}checked="checked"{% endif %}> 美女
+				</label>
+			</div>
+			<div class="input-group formitem">
+				<span class="input-group-addon"><span class="require">*</span>&nbsp密&nbsp&nbsp&nbsp&nbsp码:</span>
+				<input type="password" autocomplete="off" placeholder="请输入密码" name="password" class="form-control">
+			</div>
+
+			<div style="margin-top:20px">
+				<button class="form-control btn btn-warning" style="width:200px">保存修改</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-lg-2"></div>
+</div>
+{% endblock %}

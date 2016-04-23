@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block css_index %}
+    {{ super() }}
+	<style>
+		.formitem {
+			margin-top:5px;
+			width:100%;
+		}
+		#main {
+			background:#F0FFFF;
+			border-radius:15px;
+			padding:30px;
+			text-align:center;
+		}
+	</style>
+
+{% endblock %}
+{% block nav %}
+    {{ super() }}
+{% endblock %}
+
+{% block script_index %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block container%}
+<div class="col-lg-12" >
+	<div class="col-lg-3"></div>
+	<div class="col-lg-6" id="main">
+		<form action="/login" method="post">
+			<div class="input-group formitem">
+				<span class="input-group-addon">账号:</span>
+				<input type="text" name="phonenum" autocomplete="off" class="form-control">
+			</div>
+
+			<div class="input-group formitem">
+				<span class="input-group-addon">密码:</span>
+				<input type="password" autocomplete="off" name="password" class="form-control">
+			</div>
+
+			<div class="input-group checkbox">
+				<label><input type="checkbox" >记住我</label>
+			</div>
+			<div class="formitem">
+				<button class="form-control btn btn-primary" style="width:200px">登&nbsp&nbsp&nbsp录</button>
+			</div>
+		</form>
+		<div class="formitem" style="text-align:center"><a href="/register" style="">没有账号？点击注册</a></div>
+	</div>
+	<div class="col-lg-3"></div>
+</div>
+{% endblock %}

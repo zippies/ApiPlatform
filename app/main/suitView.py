@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-from flask import render_template,request,jsonify
+from flask import render_template,request,jsonify,abort
 from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.logger import Logger
 from .framework.methods import *
 from ..models import db,Api,ApiCase,TestSuit
+from flask.ext.login import login_required,current_user
 from jinja2 import Template
 from config import Config
 from . import url
 import time,os
 
 @url.route("/")
-@url.route("/index")
 @url.route("/suits")
-def index():
-    apis = Api.query.all()
+@login_required
+def suits():
+    apis = Api.query.filter_by(userid=current_user.id).all()
     return render_template("suits.html",apis=apis)
 
 @url.route("/newsuit",methods=["POST"])
+@login_required
 def newsuit():
     info = {"result":True,"errorMsg":None}
     suitname = request.form.get("suitname").strip()
@@ -27,7 +29,9 @@ def newsuit():
         for caseid in suitcases:
             case = ApiCase.query.filter_by(id=caseid).first()
             if case:
-                api = Api.query.filter_by(id=case.api_id).first()
+                api = Api.query.filter_by(id=case.apiid).first()
+                if api.userid != current_user.id:
+                    abort(401)
                 if api.id not in orderedapi:
                     orders.append({
                         "id":api.id,
@@ -41,6 +45,7 @@ def newsuit():
             suit = TestSuit()
             suit.name = suitname
             suit.orders = orders
+            suit.userid = current_user.id
             db.session.add(suit)
             db.session.commit()
         else:
@@ -92,9 +97,10 @@ suit_template = \
 """
 
 @url.route("/freshsuits")
+@login_required
 def freshsuits():
     data = {"suits":None,"orders":None}
-    suits = TestSuit.query.all()
+    suits = TestSuit.query.filter_by(userid=current_user.id).all()
 
     s = Template(suit_template).render(
         suits = suits
@@ -106,11 +112,14 @@ def freshsuits():
     return jsonify(data)
 
 @url.route("/delsuit/<int:id>",methods=["POST"])
+@login_required
 def delsuit(id):
     info = {"result":True,"errorMsg":None}
     try:
         suit = TestSuit.query.filter_by(id=id).first()
         if suit:
+            if suit.userid != current_user.id:
+                abort(401)
             db.session.delete(suit)
             db.session.commit()
         else:
@@ -126,6 +135,7 @@ def getitemfromorders(apiid,orders):
             return item
 
 @url.route("/updatesuitorder/<int:suitid>",methods=["POST"])
+@login_required
 def updatesuitorder(suitid):
     info = {"result":True,"errorMsg":None}
     neworder = []
@@ -133,6 +143,8 @@ def updatesuitorder(suitid):
     try:
         suit = TestSuit.query.filter_by(id=suitid).first()
         if suit:
+            if suit.userid != current_user.id:
+                abort(401)
             for apiid in order:
                 neworder.append(getitemfromorders(apiid,suit.orders))
 
@@ -146,12 +158,15 @@ def updatesuitorder(suitid):
     return jsonify(info)
 
 @url.route("/updatecaseorder/<int:suitid>/<int:apiid>",methods=["POST"])
+@login_required
 def updatecaseorder(suitid,apiid):
     info = {"result":True,"errorMsg":None}
     caseorder = dict(request.form).get("case_order[]")
     suit = TestSuit.query.filter_by(id=suitid).first()
     neworder = []
     if suit:
+        if suit.userid != current_user.id:
+            abort(401)
         for item in suit.orders:
             if item["id"] == apiid:
                 newcases = []
@@ -170,6 +185,7 @@ def updatecaseorder(suitid,apiid):
     return jsonify(info)
 
 @url.route("/runsuit/<int:id>")
+@login_required
 def runsuit(id):
     info = {"result":True,"info":None,"errorMsg":None}
     count = request.args.get("count")
@@ -181,6 +197,8 @@ def runsuit(id):
     suit = TestSuit.query.filter_by(id=id).first()
     testcases = []
     if suit:
+        if suit.userid != current_user.id:
+            abort(401)
         for apiitem in suit.orders:
             api = Api.query.filter_by(id=int(apiitem["id"])).first()
             if api:
@@ -276,12 +294,12 @@ result_template = """
 """
 
 @url.route("/showlog")
+@login_required
 def showlog():
     logpath = request.args.get("logpath")
     realpath = os.path.join(Config.log_path,logpath)
     if os.path.exists(realpath):
         with open(realpath,"r") as f:
             return "<br>".join(f.readlines())
-
     else:
         return "未找到日志文件"

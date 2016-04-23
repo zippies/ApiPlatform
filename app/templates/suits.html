@@ -36,7 +36,7 @@ active
 
 <div class="well">
     <ul class="list-inline">
-        <li><input type="text" id="suitname" class="form-control" placeholder="测试集名称" style="width:200px" required></li>
+        <li><input type="text" id="suitname" class="form-control" maxlength="30" placeholder="测试集名称" style="width:200px" required></li>
         <li style="width:300px">
             <select name="suitapi_cases" id="choiceapis" multiple="multiple" style="display:none">
                 {% for api in apis %}
@@ -79,10 +79,21 @@ active
             });
 
             $("#newsuitbtn").click(function(){
+                if(!$("#suitname").val()){
+                    layer.msg("请先填写测试集名称")
+                    $("#suitname").focus()
+                    return
+                }
+
                 var suitapi_cases = new Array($("#choiceapis").find("option:selected").length);
                 $("option:selected").each(function(i,e){
                     suitapi_cases[i] = $(e).attr("value")
                 })
+
+                if(suitapi_cases.length == 0){
+                    layer.msg("请先选择接口")
+                    return
+                }
                 $.ajax({
                     url:"/newsuit",
                     type:"post",

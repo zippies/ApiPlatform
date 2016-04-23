@@ -5,12 +5,12 @@ import json,requests,time
 case_template = \
 """
 {% if suit %}
-logger = Logger('{{suit.name }}/{{ timenow }}/{{api.name}}_{{ case.case_name }}_{{currentCount}}')
+logger = Logger('%s/{{suit.name }}/{{ timenow }}/{{api.name}}_{{ case.case_name }}_{{currentCount}}' %current_user.nickname)
 info = {
     "name":'{{ case.case_name }}',
     "desc":'{{ case.case_desc }}',
     "apiname":'{{ api.name }}',
-    "logpath":'{{ suit.name }}/{{ timenow }}/{{ api.name }}_{{ case.case_name }}_{{currentCount}}.log',
+    "logpath":'%s/{{ suit.name }}/{{ timenow }}/{{ api.name }}_{{ case.case_name }}_{{currentCount}}.log' %current_user.nickname,
     "status":0,
     "passCheck":[],
     "failCheck":[]
@@ -191,6 +191,7 @@ class ResponseObj(object):
 
 def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=None):
     resp = None
+    fakeresp = namedtuple("fakeresp", "ok reason headers cookies status_code elapsed text")
     if not url and not method:
         api = eval("apis.%s" %api_name)
         url = api.url
@@ -199,26 +200,22 @@ def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=No
         start = time.time()
         try:
             resp = requests.post(url,data=data,headers=headers,timeout=timeout)
-        except requests.exceptions.ChunkedEncodingError:
+        except requests.exceptions.ChunkedEncodingError as e:
             elapsed = time.time() - start
-            fakeresp = namedtuple("fakeresp","ok headers cookies status_code elapsed text")
-            resp = fakeresp(ok=True,headers={},cookies={},status_code=200,elapsed=elapsed,text="接口无返回")
+            resp = fakeresp(ok=True,reason=str(e),headers={},cookies={},status_code=200,elapsed=elapsed,text="接口无返回")
         except Exception as e:
             elapsed = time.time() - start
-            fakeresp = namedtuple("fakeresp", "ok headers cookies status_code elapsed text")
-            resp = fakeresp(ok=False, headers={}, cookies={}, status_code=1001, elapsed=elapsed, text=str(e))
+            resp = fakeresp(ok=False, reason=str(e), headers={}, cookies={}, status_code=401, elapsed=elapsed, text=str(e))
     elif method.lower() == "get":
         start = time.time()
         try:
             resp = requests.get(url,params=data,headers=headers,timeout=timeout)
-        except requests.exceptions.ChunkedEncodingError:
+        except requests.exceptions.ChunkedEncodingError as e:
             elapsed = time.time() - start
-            fakeresp = namedtuple("fakeresp", "ok headers cookies status_code elapsed text")
-            resp = fakeresp(ok=True, headers={}, cookies={}, status_code=200, elapsed=elapsed, text="接口无返回")
+            resp = fakeresp(ok=True, reason=str(e), headers={}, cookies={}, status_code=200, elapsed=elapsed, text="接口无返回")
         except Exception as e:
             elapsed = time.time() - start
-            fakeresp = namedtuple("fakeresp", "ok headers cookies status_code elapsed text")
-            resp = fakeresp(ok=False, headers={}, cookies={}, status_code=1001, elapsed=elapsed, text=str(e))
+            resp = fakeresp(ok=False, reason=str(e), headers={}, cookies={}, status_code=401, elapsed=elapsed, text=str(e))
     else:
         print("unsupport method:",method)
         exit(-1)
