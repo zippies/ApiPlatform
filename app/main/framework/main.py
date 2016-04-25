@@ -20,10 +20,11 @@ info = {
 headers = {}
 data = {}
 timeout = (10,15)
+url = '{{api.url}}'
 
 {{ beforeAction }}
 
-response = send_request('{{api.name}}',url='{{api.url}}',method='{{api.type}}',data=data,headers=headers,timeout=timeout)
+response = send_request('{{api.name}}',url=url,method='{{api.type}}',data=data,headers=headers,timeout=timeout)
 
 {% if purpose == 'run' %}
 session["result"]["messages"].append("-"*30+"以下为请求信息"+"-"*30)
@@ -31,21 +32,28 @@ session["result"]["messages"].append("[请求]{{api.name}}:{{api.url}} {{api.typ
 session["result"]["messages"].append("[返回码]:%s  响应时间:%s" %(response.returncode,response.elapsed))
 session["result"]["messages"].append("[返回内容]:")
 session["result"]["messages"].append("    "+str(response.data))
-session["result"]["messages"].append("-"*28+"以下为[print]信息"+"-"*28)
+
 {% elif purpose == 'runsuit' %}
 logger.log("-"*30+"以下为请求信息"+"-"*30)
-logger.log("[请求]{{api.name}}:{{api.url}} {{api.type}}")
-logger.log("[返回码]:%s  响应时间:%s" %(response.returncode,response.elapsed))
+logger.log("[请求]: {{api.type}} {{api.url}} {{api.name}}")
+logger.log("&nbsp&nbspheaders = %s" %headers)
+logger.log("&nbsp&nbspdata = %s" %data)
+logger.log("[返回码]:%s" %response.returncode)
+logger.log("[响应时间]:%s" %response.elapsed)
 logger.log("[返回内容]:")
-logger.log("    "+str(response.data))
-logger.log("-"*28+"以下为[print]信息"+"-"*28)
+try:
+    logger.log("&nbsp&nbsp"+str(response.data))
+except:
+    pass
 {% else %}
 {% endif %}
 
 {{ afterAction }}
 
-{% for action in printActions %}
+{% if printActions%}
 {% if purpose == 'run' %}
+session["result"]["messages"].append("-"*28+"以下为[print]信息"+"-"*28)
+{% for action in printActions %}
 try:
     if isinstance({{action}},int) or isinstance({{action}},str) or isinstance({{action}},dict) or isinstance({{action}},list):
         session["result"]["messages"].append({{action}})
@@ -53,14 +61,17 @@ try:
         session["result"]["messages"].append(str({{action}}))
 except Exception as e:
     session["result"]["messages"].append(str(e))
+{% endfor %}
 {% elif purpose == 'runsuit' %}
+logger.log("-"*28+"以下为[print]信息"+"-"*28)
+{% for action in printActions %}
 try:
     logger.log({{action}})
 except:
     logger.log(str({{action}}))
-{% endif %}
 {% endfor %}
-
+{% endif %}
+{% endif %}
 
 {% if purpose == 'run' %}
 session["result"]["messages"].append("-"*28+"以下为[check]信息"+"-"*28)
@@ -197,6 +208,8 @@ def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=No
         url = api.url
         method = api.type
     if method.lower() == "post":
+        if headers.get("content-type",None) == "application/json":
+            data = json.dumps(data)
         start = time.time()
         try:
             resp = requests.post(url,data=data,headers=headers,timeout=timeout)

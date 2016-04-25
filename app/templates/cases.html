@@ -8,7 +8,11 @@
     {{ super() }}
     <style>
         .rowitem{
-            margin-top:10px
+            padding:5px;
+        }
+
+        .mirrorarea{
+            border:1px solid green;
         }
     </style>
 {% endblock %}
@@ -30,12 +34,12 @@ active
 
 {% block container%}
 <!-- newcasepanel begin -->
-<div class="row rowitem">
+<div class="row">
     <div class="col-lg-8">
         <div>
             <ul class="list-inline">
                 <li>
-                    选择测试接口：
+                    <label>选择测试接口：</label>
                 </li>
                 <li>
                     <select id="apiselect" class="form-control">
@@ -49,17 +53,15 @@ active
                 <li><a href="javascript:;" name="save" id="save" onclick="sendrequest(this.name)" class="btn btn-warning">保存</a></li>
             </ul>
         </div>
-        <div class="rowitem">
+        <div class="col-lg-12 rowitem" style="margin-left:0px;">
             <ul class="list-inline">
-                <li><label>用例名称:</label></li>
-                <li><input type="text" id="casename" maxlength="30" class="form-control" placeholder="用例名称"></li>
-                <li><label>检查点描述:</label></li>
-                <li><input type="text" id="casedesc" maxlength="100" class="form-control" placeholder="检查点描述"></li>
+                <li class="col-lg-3"><input type="text" id="casename" maxlength="30" class="form-control" placeholder="用例名称"></li>
+                <li class="col-lg-9"><input type="text" id="casedesc" maxlength="100" class="form-control" placeholder="检查点描述"></li>
             </ul>
         </div>
-        <div class="rowitem">测试脚本：</div>
-        <div class="rowitem">
-            <textarea id="testscriptarea" style="height:300px;width:100%">[before]
+        <div><label>测试脚本：</label></div>
+        <div>
+            <textarea id="testscriptarea" style="height:300px;display:none;width:100%;background:black;">[before]
 headers = {}
 data = {}
 
@@ -83,9 +85,8 @@ response.elapsed < 0.1
             </script>
         </div>
 
-        <div class="rowitem">
-            <div>运行结果：</div>
-            <span id="passcount" style="font-size:13px;color:green;"></span>&nbsp&nbsp<span id="failcount" style="font-size:13px;color:red;"></span>
+        <div class="rowitem" id="resultdiv" style="padding:0px;display:none">
+            <div><label>运行结果：</label><span id="passcount" style="color:green;"></span>&nbsp&nbsp<span id="failcount" style="color:red;"></span></div>
             <textarea id="resultarea"></textarea>
             <script>
                 var resultmirror = CodeMirror.fromTextArea(document.getElementById('resultarea'),{
@@ -127,8 +128,6 @@ response.elapsed < 0.1
         $(function(){
             freshcasetable()
 
-            //$(this).find("option[value="+sessionStorage.testapi_id+"]").attr("selected",true)
-
             $("#apiselect").change(function(){
                 api_id = $(this).find("option:selected").attr("value")
                 sessionStorage.testapi_id = api_id
@@ -138,8 +137,8 @@ response.elapsed < 0.1
         function sendrequest(purpose){
             testscript = scriptmirror.getDoc().getValue()
             sessionStorage.testscript = JSON.stringify(testscript)
-
-            if(purpose != "run"){
+            console.log(purpose)
+            if(purpose == "run"){
                 if($("#apiselect").find("option:selected").val() == 0){
                     layer.msg("请选择接口")
                     $("#apiselect").focus()
@@ -165,6 +164,8 @@ response.elapsed < 0.1
 
             resultmirror.setValue("")
 
+            layer.load(2)
+
             $.ajax({
                 url: "/sendcaserequest",
                 type: "post",
@@ -174,9 +175,12 @@ response.elapsed < 0.1
                     layer.msg(request.status)
                 },
                 success: function(data){
+                    layer.closeAll('loading');
                     if(data.result){
                         if(purpose == "run"){
                             resultmirror.setValue(data.messages)
+                            $("#resultdiv").show();
+                            resultmirror.refresh();
                             $("#passcount").html("成功:"+data.success)
                             $("#failcount").html("失败:"+data.failed)
                         }else{
@@ -247,7 +251,7 @@ response.elapsed < 0.1
                             ele.replaceWith("<option value="+sessionStorage.testapi_id+">"+ele.html()+"</option>")
                             $(document).find("option[value="+data.api_id+"]").attr("selected","selected")
                         }else{
-                            console.log(1111,parseInt(sessionStorage.testapi_id),data.api_id)
+                            $(document).find("option[value="+data.api_id+"]").attr("selected","selected")
                         }
                         $("#apiselect").attr("disabled","disabled")
                         $("#casename").val(data.name)

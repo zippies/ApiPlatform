@@ -36,7 +36,9 @@ def newsuit():
                     orders.append({
                         "id":api.id,
                         "name":api.name,
-                        "cases":[{"id":c.id,"name":c.name} for c in api.apicases if str(c.id) in suitcases]
+                        "url":api.url,
+                        "type":api.type,
+                        "cases":[{"id":c.id,"name":c.name,"desc":c.desc} for c in api.apicases if str(c.id) in suitcases]
                     })
                     orderedapi.append(api.id)
                 else:
@@ -62,16 +64,15 @@ suit_template = \
     <div class="well">
         <div id="apilist_{{ suit.id }}" class="list-group">
         {% for api in suit.orders %}
-            <div api-suit-{{suit.id}}="{{api.id}}" class="list-group-item">
+            <div api-suit-{{suit.id}}="{{api.id}}" class="list-group-item col-lg-12">
                 <span class="badge" style="color:yellow">{{ api.cases|length }}</span>
-                <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-                接口:<a href="#suit_{{suit.id}}_api_{{api.id}}" data-toggle="collapse" aria-expanded="false" aria-controls="suit_{{suit.id}}_api_{{api.id}}">{{ api.name }}</a>
-                <div class="collapse" id="suit_{{suit.id}}_api_{{api.id}}" style="margin-top:10px">
+                <span class="col-lg-3"><span class="glyphicon glyphicon-move" aria-hidden="true"></span> 接口:<a href="#suit_{{suit.id}}_api_{{api.id}}" data-toggle="collapse" aria-expanded="false" aria-controls="suit_{{suit.id}}_api_{{ api.id }}">{{ api.name }}</a></span>
+                <span class="col-lg-7">&nbsp{{api.type}}&nbsp{{ api.url }}&nbsp&nbsp&nbsp</span>
+                <div class="collapse col-lg-12" id="suit_{{suit.id}}_api_{{api.id}}" style="margin-top:20px;margin-left:30px;">
                     <div id="caselist_suit_{{suit.id}}_api_{{api.id}}" class="list-group">
                     {% for case in api.cases %}
-                        <div api-suit-{{suit.id}}-api-{{api.id}}="{{case.id}}" class="list-group-item">
-                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span>
-                            用例:<span>{{case.name}}</span>
+                        <div api-suit-{{suit.id}}-api-{{api.id}}="{{case.id}}" class="list-group-item col-lg-12">
+                            <span class="glyphicon glyphicon-move" aria-hidden="true"></span> 用例:<span>{{case.name}}&nbsp&nbsp&nbsp&nbsp描述:{{ case.desc }}
                         </div>
                     {% endfor %}
                     </div>
@@ -79,6 +80,7 @@ suit_template = \
             </div>
         {% endfor %}
         </div>
+        <div>
             <ul class="list-inline list-group">
                 <li>运行次数:</li>
                 <li><input id="runcount_{{suit.id}}" value="1" class="form-control"/></li>
@@ -90,6 +92,7 @@ suit_template = \
 
                 </div>
             </ul>
+        </div>
     </div>
 </div>
 
@@ -253,7 +256,6 @@ def runsuit(id):
 
     s = Template(result_template).render(result=suit.result)
     info["info"] = s
-
     return jsonify(info)
 
 result_template = """
@@ -273,7 +275,7 @@ result_template = """
             {% for item in detail %}
             <tr class="{% if item.status == 0 %}success{% else %}danger{% endif %}">
                 <td>{{ item.apiname }}</td>
-                <td>{{ item.name }}</td>
+                <td><a href="javascript:;" onclick="showcase('{{ item.name }}')">{{ item.name }}</a></td>
                 <td>{{ item.desc }}</td>
                 <td>
                     {% for fc in item.failCheck %}
@@ -303,3 +305,12 @@ def showlog():
             return "<br>".join(f.readlines())
     else:
         return "未找到日志文件"
+
+@url.route("/showcase")
+def showcase():
+    name = request.args.get("casename")
+    case = ApiCase.query.filter_by(name=name).first()
+    if case:
+        return "<div style='padding:20px'>%s</div>" %"<br>".join(case.content.split("\n"))
+    else:
+        return "用例不存在或已被删除"

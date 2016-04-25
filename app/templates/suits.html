@@ -124,7 +124,7 @@ active
 
                         Sortable.create(document.getElementById("apilist_"+suit_id), {
                             group: 'suit-'+suit_id,
-                            handle: '.glyphicon-move',
+                            handle: '.list-group-item',
                             sort:true,
                             delay: 0,
                             dataIdAttr: 'api-suit-'+suit_id,
@@ -136,8 +136,6 @@ active
                                 },
                                 set: function (sortable) {
                                     var order = sortable.toArray();
-                                    console.log(sortable.options.group)
-                                    console.log(order)
                                     suitid = sortable.options.group.name.substring(5)
                                     $.ajax({
                                         url:"/updatesuitorder/"+suitid,
@@ -159,7 +157,7 @@ active
                         apilist.forEach(function(api){
                             Sortable.create(document.getElementById("caselist_suit_"+suit_id+"_api_"+api.id), {
                                 group: 'suit-'+suit_id+'-api-'+api.id,
-                                handle: '.glyphicon-move',
+                                handle: '.list-group-item',
                                 sort:true,
                                 delay: 0,
                                 dataIdAttr: 'api-suit-'+suit_id+'-api-'+api.id,
@@ -171,8 +169,6 @@ active
                                     },
                                     set: function (sortable) {
                                         var order = sortable.toArray();
-                                        console.log(sortable.options.group)
-                                        console.log(order)
                                         suitid = sortable.options.group.name.split("-")[1]
                                         apiid = sortable.options.group.name.split("-")[3]
                                         $.ajax({
@@ -208,7 +204,8 @@ active
                     success:function(data){
                         if(data.result){
                             $("#suitlist_"+id).remove()
-                            layer.msg("删除成功")
+                            layer.msg("删除成功");
+                            localStorage.clear();
                         }else{
                             layer.msg("删除失败:"+data.errorMsg)
                         }
@@ -230,10 +227,8 @@ active
                 data:{"count":count},
                 success:function(data){
                     if(data.result){
-                        console.log(data.info)
                         $btn.button("reset")
                         $("#result_"+id).append(data.info)
-                        layer.msg("运行成功")
                     }else{
                         layer.msg("运行失败:"+data.errorMsg)
                     }
@@ -244,7 +239,6 @@ active
         function showlog(casename,logpath){
             width = document.body.clientWidth * 0.7
             height = document.body.clientHeight * 0.6
-            console.log(logpath)
             layer.open({
                 type: 2,
                 title: "用例名："+casename,
@@ -252,6 +246,22 @@ active
                 shadeClose: true, //开启遮罩关闭
                 content: '/showlog?logpath='+logpath
             });
+        }
+
+        function showcase(casename){
+            $.ajax({
+                url:"/showcase?casename="+casename,
+                type:"get",
+                success:function(data){
+                    layer.open({
+                        type: 1,
+                        title:"用例名:" + casename,
+                        area: ['600px', '600px'], //宽高
+                        shadeClose: true, //开启遮罩关闭
+                        content: data
+                    });
+                }
+            })
         }
     </script>
 {% endblock %}
