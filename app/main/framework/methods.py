@@ -24,20 +24,20 @@ def randomPhoneNum():
     after = randomInt(8)
     return "%s%s" %(pre,after)
 
-def setenv(key,value):
+def setenv(key,value,user):
     env = None
-    if os.path.exists("data/env.pkl"):
-        env = pickle.load(open("data/env.pkl", 'rb'))
+    if os.path.exists("data/%s_%s.pkl" %(user.id,user.nickname)):
+        env = pickle.load(open("data/%s_%s.pkl" %(user.id,user.nickname), 'rb'))
     else:
         env = EnvObj()
 
     setattr(env,key,value)
-    pickle.dump(env,open("data/env.pkl","wb"))
+    pickle.dump(env,open("data/%s_%s.pkl" %(user.id,user.nickname),"wb"))
 
-def getenv(key):
+def getenv(key,user):
     env = None
-    if os.path.exists("data/env.pkl"):
-        env = pickle.load(open("data/env.pkl",'rb'))
+    if os.path.exists("data/%s_%s.pkl" %(user.id,user.nickname)):
+        env = pickle.load(open("data/%s_%s.pkl" %(user.id,user.nickname),'rb'))
         if hasattr(env,key):
             return getattr(env,key)
         else:

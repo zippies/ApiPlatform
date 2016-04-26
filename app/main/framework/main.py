@@ -31,7 +31,7 @@ session["result"]["messages"].append("-"*30+"以下为请求信息"+"-"*30)
 session["result"]["messages"].append("[请求]{{api.name}}:{{api.url}} {{api.type}}")
 session["result"]["messages"].append("[返回码]:%s  响应时间:%s" %(response.returncode,response.elapsed))
 session["result"]["messages"].append("[返回内容]:")
-session["result"]["messages"].append("    "+str(response.data))
+session["result"]["messages"].append(json.dumps(response.data,indent=4,ensure_ascii=False))
 
 {% elif purpose == 'runsuit' %}
 logger.log("-"*30+"以下为请求信息"+"-"*30)
@@ -43,8 +43,8 @@ logger.log("[响应时间]:%s" %response.elapsed)
 logger.log("[返回内容]:")
 try:
     logger.log("&nbsp&nbsp"+str(response.data))
-except:
-    pass
+except Exception as e:
+    print(e)
 {% else %}
 {% endif %}
 
@@ -67,7 +67,7 @@ logger.log("-"*28+"以下为[print]信息"+"-"*28)
 {% for action in printActions %}
 try:
     logger.log({{action}})
-except:
+except Exception as e:
     logger.log(str({{action}}))
 {% endfor %}
 {% endif %}
@@ -111,20 +111,42 @@ suit.result["details"][{{currentCount}}].append(info)
 
 {% endif %}
 """
+def addUser(action):
+    count = action.count("getenv") + action.count("setenv")
+    setok = False
+    for i in range(count):
+        if "setenv" in action and not setok:
+            pre = action.split("setenv(")[0]
+            after = "setenv(".join(action.split("setenv(")[1:])
+            after_pre = after.split(",")[0]
+            after_aft = ",".join(after.split(",")[1:])[:-1]
+            after = after_pre+","+after_aft + ",current_user)"
+            action = "%ssetenv(%s" %(pre,after)
+            setok = True
+        elif "getenv" in action:
+            pre = action.split("getenv(")[0]
+            after = "getenv(".join(action.split("getenv(")[1:])
+            after_pre = after[:after.index(")")]
+            after_aft = after[after.index(")"):]
+            action = "%sgetenv(%s,current_user%s" %(pre,after_pre,after_aft)
+
+    return action
 
 def parseScript(script):
     sp1 = script.split("[check]")
-    checkActions = [line.replace("\"", "'").strip() for line in sp1[1].strip().split("\n") if line.strip()]
+    checkActions = [addUser(line.replace("\"", "'").strip()) for line in sp1[1].strip().split("\n") if line.strip()]
     sp2 = sp1[0].split("[after]")
     actions, printActions = [], []
     for action in sp2[1].strip().split("\n"):
+        action = addUser(action)
         if action.strip().startswith("print(") and action.strip().endswith(")"):
             printActions.append(action.split("print")[1].strip())
         else:
             if action.strip():
                 actions.append(action)
 
-    beforeAction = sp2[0].split("[before]")[1].strip()
+    beforeAction = "\n".join([addUser(a) for a in sp2[0].split("[before]")[1].strip().split("\n")])
+
     actionParser = namedtuple("actionParser","beforeAction actions printActions checkActions")
     return actionParser(beforeAction,'\n'.join(actions),printActions,checkActions)
 

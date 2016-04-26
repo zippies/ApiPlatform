@@ -21,6 +21,9 @@
 		.require{
 		    color:#BC8F8F;
 		}
+		.input-group-addon{
+			width:100px
+		}
 	</style>
 
 {% endblock %}
@@ -49,26 +52,22 @@
 			</div>
 
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require">*</span>&nbsp昵&nbsp&nbsp&nbsp&nbsp称:</span>
+				<span class="input-group-addon"><span class="require">*</span>&nbsp昵&nbsp&nbsp&nbsp称:</span>
 				<input type="text" name="nickname" placeholder="请输入昵称" class="form-control" required>
 			</div>
 
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require"></span>&nbsp邮&nbsp&nbsp&nbsp&nbsp箱:</span>
-				<input type="email" name="email" class="form-control" oninvalid="setCustomValidity('T T 邮箱格式不正确');">
+				<span class="input-group-addon"><span class="require">&nbsp</span>&nbsp邮&nbsp&nbsp&nbsp箱:</span>
+				<input type="email" name="email" class="form-control" oninvalid="setCustomValidity('邮箱格式不正确');">
 			</div>
 
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require"></span>&nbsp性&nbsp&nbsp&nbsp&nbsp别:</span>
-				<label class="radio-inline">
-					<input type="radio" name="sex" id="sex_1" value="帅哥"> 帅哥
-				</label>
-				<label class="radio-inline">
-					<input type="radio" name="sex" id="sex_2" value="美女"> 美女
-				</label>
+				<span class="input-group-addon"><span class="require">&nbsp</span>&nbsp性&nbsp&nbsp&nbsp别:</span>
+					<label class="radio-inline"><input type="radio" name="sex" id="sex_1" value="帅哥"> 帅哥</label>
+					<label class="radio-inline"><input type="radio" name="sex" id="sex_2" value="美女"> 美女</label>
 			</div>
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require">*</span>&nbsp密&nbsp&nbsp&nbsp&nbsp码:</span>
+				<span class="input-group-addon"><span class="require">*</span>&nbsp密&nbsp&nbsp&nbsp码:</span>
 				<input type="password" autocomplete="off" placeholder="请输入密码" name="password" class="form-control" required>
 			</div>
 

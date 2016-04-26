@@ -114,7 +114,7 @@ def saveapi():
 @url.route("/editapi/<int:id>",methods=["POST"])
 def editapi(id):
     info = {"result":True,"errorMsg":None}
-    api = Api.query.filter_by(id=id).first()
+    api = Api.query.filter_by(id=id).filter_by(userid=current_user.id).first()
     if api:
         if api.userid != current_user.id:
             abort(401)
@@ -134,7 +134,7 @@ def editapi(id):
 @url.route("/delapi/<int:id>",methods=["POST"])
 def delapi(id):
     info = {"result":True,"errorMsg":None}
-    api = Api.query.filter_by(id=id).first()
+    api = Api.query.filter_by(id=id).filter_by(userid=current_user.id).first()
     if api:
         if api.userid != current_user.id:
             abort(401)

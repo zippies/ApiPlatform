@@ -2,13 +2,13 @@
 from flask import render_template,request,jsonify,abort
 from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.logger import Logger
-from .framework.methods import *
 from ..models import db,Api,ApiCase,TestSuit
 from flask.ext.login import login_required,current_user
+from .framework.methods import *
 from jinja2 import Template
 from config import Config
 from . import url
-import time,os
+import time,os,json
 
 @url.route("/")
 @url.route("/suits")
@@ -80,19 +80,16 @@ suit_template = \
             </div>
         {% endfor %}
         </div>
-        <div>
-            <ul class="list-inline list-group">
-                <li>运行次数:</li>
-                <li><input id="runcount_{{suit.id}}" value="1" class="form-control"/></li>
-                <li>
-                    <button id="runsuit_{{suit.id}}" onclick="runsuit({{suit.id}})" data-loading-text="正在运行" autocomplete="off" class="btn btn-default">运行</button>
-                </li>
-                <li><button onclick="delsuit({{suit.id}})" class="btn btn-default">删除</button></li>
-                <div id="result_{{ suit.id }}" style="padding:10px">
-
-                </div>
-            </ul>
-        </div>
+        <ul class="list-inline list-group">
+            <li>运行次数:</li>
+            <li><input id="runcount_{{suit.id}}" value="1" class="form-control"/></li>
+            <li>
+                <button id="runsuit_{{suit.id}}" onclick="runsuit({{suit.id}})" data-loading-text="正在运行" autocomplete="off" class="btn btn-default">运行</button>
+            </li>
+            <li><button onclick="delsuit({{suit.id}})" class="btn btn-default">删除</button></li>
+            <div id="result_{{ suit.id }}" style="padding:5px">
+            </div>
+        </ul>
     </div>
 </div>
 
@@ -207,13 +204,13 @@ def runsuit(id):
             if api:
                 for caseitem in apiitem["cases"]:
                     case = ApiCase.query.filter_by(id=int(caseitem["id"])).first()
-
-                    testcases.append({
-                        "api":api,
-                        "case_name":case.name,
-                        "case_desc":case.desc,
-                        "case_content":case.content
-                    })
+                    if case:
+                        testcases.append({
+                            "api":api,
+                            "case_name":case.name,
+                            "case_desc":case.desc,
+                            "case_content":case.content
+                        })
             else:
                 pass
     else:

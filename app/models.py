@@ -4,8 +4,6 @@ from collections import OrderedDict
 from flask.ext.login import UserMixin
 from . import db,login_manager
 
-
-
 info = {"result":True,"errorMsg":None}
 message = {"type":"info","message":None}
 
@@ -30,6 +28,7 @@ class User(db.Model,UserMixin):
     ip = db.Column(db.String(32))
     apis = db.relationship('Api', backref='user', lazy='dynamic')
     suits = db.relationship('TestSuit', backref='user', lazy='dynamic')
+    cases = db.relationship('ApiCase', backref='user', lazy='dynamic')
     createdtime = db.Column(db.DateTime,default=datetime.now)
 
     def __init__(self,nickname,phonenum,password,password_heihei,email,sex,ip):
@@ -47,7 +46,7 @@ class User(db.Model,UserMixin):
 
 class Api(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32),unique=True)
+    name = db.Column(db.String(32))
     url = db.Column(db.String(128))
     type = db.Column(db.String(10))
     headers = db.Column(db.PickleType)
@@ -78,22 +77,24 @@ class Api(db.Model):
 
 class ApiCase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32),unique=True)
+    name = db.Column(db.String(32))
     desc = db.Column(db.String(256))
     content = db.Column(db.PickleType)
     apiid = db.Column(db.Integer,db.ForeignKey('api.id'))
+    userid = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self,name,desc,content):
+    def __init__(self,name,desc,content,userid):
         self.name = name
         self.desc = desc
         self.content = content
+        self.userid = userid
 
     def __repr__(self):
         return "<ApiCase:%s belong apiid:%s>" %(self.name,self.apiid)
 
 class TestSuit(db.Model):
     id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(32),unique=True)
+    name = db.Column(db.String(32))
     orders = db.Column(db.PickleType)
     status = db.Column(db.Integer,default=0)
     result = db.Column(db.PickleType,default={"caseCount":0,"apiCount":0,"runCount":1,"details":OrderedDict()})

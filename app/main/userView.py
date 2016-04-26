@@ -38,7 +38,7 @@ def register():
         password = request.form.get("password")
         ip = request.remote_addr
         try:
-            user = User.query.filter_by(phonenum=phone).first()
+            user = User.query.filter_by(phonenum=phone).first() or User.query.filter_by(email=email).first()
             if not user:
                 user = User(
                             nickname,
@@ -56,7 +56,7 @@ def register():
                 return redirect(url_for(".login"))
             else:
                 message["type"] = "error"
-                message["message"] = "手机号已注册"
+                message["message"] = "手机号或邮箱已注册"
                 flash(message)
         except Exception as e:
             message["type"] = "error"

@@ -3,9 +3,10 @@ from flask import render_template,request,jsonify,session
 from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.methods import *
 from ..models import db,Api,ApiCase
-from flask.ext.login import login_required
+from flask.ext.login import login_required,current_user
 from jinja2 import Template
 from . import url
+import json
 
 caseitem_template = """
 {% for case,api in case_api %}
@@ -28,9 +29,9 @@ def cases():
         "successChecks":[],
         "failedChecks":[]
     }
-    apis = Api.query.all()
-    cases = ApiCase.query.all()
-    return render_template("cases.html",apis=apis,cases=cases)
+
+    apis = Api.query.filter_by(userid=current_user.id).all()
+    return render_template("cases.html",apis=apis)
 
 @url.route("/sendcaserequest",methods=["POST"])
 @login_required
@@ -45,8 +46,8 @@ def sendcaserequest():
     info = {"result":True,"errorMsg":None,"ok":None,"success":0,"failed":0,"messages":None}
     apiid = int(request.form.get("apiid"))
     api = Api.query.filter_by(id=apiid).first()
-    name = request.form.get("name")
-    desc = request.form.get("desc")
+    name = request.form.get("name").strip()
+    desc = request.form.get("desc").strip()
     script = request.form.get("script").strip()
     purpose = request.form.get("purpose")
 
@@ -72,13 +73,13 @@ def sendcaserequest():
         info["failed"] = len(session["result"]["failedChecks"])
         info["ok"] = False if session["result"]["failedChecks"] else True
     elif purpose == "save":
-        case = ApiCase.query.filter_by(name=name).first()
+        case = ApiCase.query.filter_by(name=name).filter_by(userid=current_user.id).first()
         if case:
             info["result"] = False
             info["errorMsg"] = "该名称的用例已存在"
         else:
             try:
-                case = ApiCase(name,desc,script)
+                case = ApiCase(name,desc,script,current_user.id)
                 db.session.add(case)
                 db.session.commit()
                 api.apicases.append(case)
@@ -91,7 +92,7 @@ def sendcaserequest():
         print("edit case",name)
         try:
             caseid = int(request.form.get("caseid"))
-            case = ApiCase.query.filter_by(id=caseid).first()
+            case = ApiCase.query.filter_by(id=caseid).filter_by(userid=current_user.id).first()
             if case:
                 case.name = name.strip()
                 case.desc = desc.strip()
@@ -112,7 +113,7 @@ def sendcaserequest():
 @login_required
 def freshcasetable():
     from jinja2 import Template
-    case_api = [(case,Api.query.filter_by(id=case.apiid).first()) for case in ApiCase.query.all()]
+    case_api = [(case,Api.query.filter_by(id=case.apiid).first()) for case in ApiCase.query.filter_by(userid=current_user.id).all()]
     casetable = Template(caseitem_template).render(
         case_api = case_api
     )
@@ -122,7 +123,7 @@ def freshcasetable():
 @login_required
 def delcase(id):
     info = {"result":True,"errorMsg":None}
-    case = ApiCase.query.filter_by(id=id).first()
+    case = ApiCase.query.filter_by(id=id).filter_by(userid=current_user.id).first()
     if case:
         try:
             db.session.delete(case)
@@ -139,7 +140,7 @@ def delcase(id):
 def getcaseinfo(id):
     info = {"result":True,"api_id":None,"name":None,"desc":None,"content":None}
     try:
-        case = ApiCase.query.filter_by(id=id).first()
+        case = ApiCase.query.filter_by(id=id).filter_by(userid=current_user.id).first()
         if case:
             info["api_id"] = case.apiid
             info["content"] = case.content

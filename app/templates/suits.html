@@ -226,9 +226,9 @@ active
                 url:"/runsuit/"+id,
                 data:{"count":count},
                 success:function(data){
+                    $btn.button("reset")
                     if(data.result){
-                        $btn.button("reset")
-                        $("#result_"+id).append(data.info)
+                        $("#result_"+id).append("<div><a href='javascript:;' onclick='$(\"#result_\"+"+id+").empty()'><span style='text-align:center;width:100%;height:20px' class='glyphicon glyphicon-minus'></span></a></div>").append(data.info)
                     }else{
                         layer.msg("运行失败:"+data.errorMsg)
                     }
