@@ -8,7 +8,6 @@ class EnvObj(object):
         return "<EnvironmentObject>"
 
 def toMD5(str):
-
     hash = hashlib.md5()
     hash.update(str.encode())
     return hash.hexdigest()
@@ -33,6 +32,7 @@ def setenv(key,value,user):
 
     setattr(env,key,value)
     pickle.dump(env,open("data/%s_%s.pkl" %(user.id,user.nickname),"wb"))
+    return True
 
 def getenv(key,user):
     env = None
@@ -44,3 +44,19 @@ def getenv(key,user):
             return None
     else:
         return None
+
+def delenv(key,user):
+    env = None
+    if os.path.exists("data/%s_%s.pkl" %(user.id,user.nickname)):
+        env = pickle.load(open("data/%s_%s.pkl" %(user.id,user.nickname),'rb'))
+        if hasattr(env,key):
+            delattr(env,key)
+            pickle.dump(env, open("data/%s_%s.pkl" % (user.id, user.nickname), "wb"))
+            return True
+        else:
+            return None
+    else:
+        return None
+
+def querySQL():
+    pass

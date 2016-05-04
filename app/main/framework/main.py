@@ -28,14 +28,14 @@ response = send_request('{{api.name}}',url=url,method='{{api.type}}',data=data,h
 
 {% if purpose == 'run' %}
 session["result"]["messages"].append("-"*30+"以下为请求信息"+"-"*30)
-session["result"]["messages"].append("[请求]{{api.name}}:{{api.url}} {{api.type}}")
+session["result"]["messages"].append("[请求]{{api.name}}:%s {{api.type}}" %url)
 session["result"]["messages"].append("[返回码]:%s  响应时间:%s" %(response.returncode,response.elapsed))
 session["result"]["messages"].append("[返回内容]:")
 session["result"]["messages"].append(json.dumps(response.data,indent=4,ensure_ascii=False))
 
 {% elif purpose == 'runsuit' %}
 logger.log("-"*30+"以下为请求信息"+"-"*30)
-logger.log("[请求]: {{api.type}} {{api.url}} {{api.name}}")
+logger.log("[请求]: {{api.type}} %s {{api.name}}" %url)
 logger.log("&nbsp&nbspheaders = %s" %headers)
 logger.log("&nbsp&nbspdata = %s" %data)
 logger.log("[返回码]:%s" %response.returncode)
@@ -84,9 +84,9 @@ logger.log("-"*28+"以下为[check]信息"+"-"*28)
 {% if purpose == 'run' %}
 try:
     if not {{ ca }}:
-        session["result"]["failedChecks"].append("[failed] {{ ca }}")
+        session["result"]["failedChecks"].append("[失败] {{ ca }}")
     else:
-        session["result"]["successChecks"].append("[success]{{ ca }}")
+        session["result"]["successChecks"].append("[pass]{{ ca }}")
 except Exception as e:
     session["result"]["failedChecks"].append("[failed] %s" %str(e))
 {% elif purpose == 'runsuit' %}
@@ -229,9 +229,9 @@ def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=No
         api = eval("apis.%s" %api_name)
         url = api.url
         method = api.type
+    if headers.get("content-type", None) == "application/json":
+        data = json.dumps(data)
     if method.lower() == "post":
-        if headers.get("content-type",None) == "application/json":
-            data = json.dumps(data)
         start = time.time()
         try:
             resp = requests.post(url,data=data,headers=headers,timeout=timeout)
@@ -245,6 +245,26 @@ def send_request(api_name,url=None,method=None,data=None,headers=None,timeout=No
         start = time.time()
         try:
             resp = requests.get(url,params=data,headers=headers,timeout=timeout)
+        except requests.exceptions.ChunkedEncodingError as e:
+            elapsed = time.time() - start
+            resp = fakeresp(ok=True, reason=str(e), headers={}, cookies={}, status_code=200, elapsed=elapsed, text="接口无返回")
+        except Exception as e:
+            elapsed = time.time() - start
+            resp = fakeresp(ok=False, reason=str(e), headers={}, cookies={}, status_code=401, elapsed=elapsed, text=str(e))
+    elif method.lower() == "put":
+        start = time.time()
+        try:
+            resp = requests.put(url,data=data,headers=headers,timeout=timeout)
+        except requests.exceptions.ChunkedEncodingError as e:
+            elapsed = time.time() - start
+            resp = fakeresp(ok=True, reason=str(e), headers={}, cookies={}, status_code=200, elapsed=elapsed, text="接口无返回")
+        except Exception as e:
+            elapsed = time.time() - start
+            resp = fakeresp(ok=False, reason=str(e), headers={}, cookies={}, status_code=401, elapsed=elapsed, text=str(e))
+    elif method.lower() == "delete":
+        start = time.time()
+        try:
+            resp = requests.delete(url,data=data,headers=headers,timeout=timeout)
         except requests.exceptions.ChunkedEncodingError as e:
             elapsed = time.time() - start
             resp = fakeresp(ok=True, reason=str(e), headers={}, cookies={}, status_code=200, elapsed=elapsed, text="接口无返回")

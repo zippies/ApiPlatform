@@ -48,14 +48,18 @@
             <div id="maincontent" class="templatemo-content col-1 light-gray-bg">
                 <div style="height:40px;line-height:40px;">
                     {% if current_user.is_authenticated %}
-                        <div class="btn-group pull-right" style="margin-right:20px">
+                    <div style="text-align:center">
+                        <a class="btn btn-default btn-sm" role="button" tabindex="0" id="environment-btn" data-toggle="popover" title="Environment Variables"><span class="glyphicon glyphicon-globe"></span> 配置环境变量</a>
+                        <span class="btn-group pull-right" style="margin-right:20px">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span style="color:black">hi,{{ current_user.nickname }}</span><span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="/modifyinfo">资料设置</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="/logout">注销登录</a></li>
                             </ul>
-                        </div>
+                        </span>
+                    </div>
+
                     {%else%}
                         <div class="pull-right" style="margin-right:20px"><a href="/login"><span class="glyphicon glyphicon-king"></span> 登 录</a></div>
                     {% endif %}
@@ -92,7 +96,73 @@
                 layer.config({
 				    extend: 'extend/layer.ext.js'
 			    });
+
+                $.get('/getenvironment',{},function(data){
+                    $("#environment-btn").attr("data-content",data)
+                    $('#environment-btn').popover({
+                        html:true
+                    })
+                })
             })
+
+            function newEnv(){
+                if($("#envname").val() && $("#envvalue").val()){
+                    $.ajax({
+                        url:"/newenv",
+                        type:"post",
+                        data:$("#newenvform").serialize(),
+                        success:function(data){
+                            if(data.result){
+                                layer.msg("新增成功")
+                                $("#newenvdiv").after(data.data)
+                            }else{
+                                layer.msg(data.errorMsg)
+                            }
+                        }
+                    })
+                }else{
+                    if(!$("#envname").val()){
+                        layer.msg("变量名不能为空")
+                        $("#envname").focus()
+                    }else{
+                        layer.msg("值不能为空")
+                        $("#envvalue").focus()
+                    }
+
+                }
+            }
+
+            function saveEnv(name){
+                value = $("#envvalue_"+name).val()
+                $.ajax({
+                    url:"/saveenv",
+                    data:{"name":name,"value":value},
+                    type:"post",
+                    success:function(data){
+                        if(data.result){
+                            layer.msg("保存成功")
+                        }else{
+                            layer.msg(data.errorMsg)
+                        }
+                    }
+                })
+            }
+
+            function delEnv(name){
+                $.ajax({
+                    url:"/delenv/" + name,
+                    type:"post",
+                    async:true,
+                    success:function(data){
+                        if(data.result){
+                            layer.msg("删除成功")
+                            $("#"+name).remove()
+                        }else{
+                            layer.msg(data.errorMsg)
+                        }
+                    }
+                })
+            }
         </script>
     {% endblock %}
 

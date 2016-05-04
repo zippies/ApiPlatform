@@ -1,10 +1,10 @@
-from flask import render_template,request,flash,redirect,url_for
-from werkzeug.exceptions import abort
+from flask import render_template,request,flash,redirect,url_for,jsonify
 from . import url
 from ..models import db,User,message
+from .framework.methods import *
 from flask.ext.login import login_user,logout_user,current_user
 from werkzeug.security import generate_password_hash,check_password_hash
-
+import pickle
 
 @url.route("/login",methods=["POST","GET"])
 def login():
@@ -71,7 +71,7 @@ def logout():
     return redirect(url_for(".login"))
 
 @url.route("/modifyinfo",methods=["POST","GET"])
-def modifyinfo():
+def modifyInfo():
     if request.method == "POST":
         try:
             nickname = request.form.get("nickname")
@@ -95,3 +95,65 @@ def modifyinfo():
             return redirect(url_for(".suits"))
 
     return render_template("modifyinfo.html")
+
+@url.route("/getenvironment")
+def getEnvironment():
+    data_f = "%s_%s.pkl" %(current_user.id,current_user.nickname)
+    data = pickle.load(open('data/%s' %data_f,'rb'))
+    environments = "<div  id='newenvdiv' style='border:1px solid #CDCDC1;border-radius:5px;background:#E6E6FA;padding:10px;text-align:center;margin-bottom:10px'>\
+    <form id='newenvform'>\
+    <input type='text' id='envname' class='form-control' name='name' placeholder='变量名' style='margin-bottom:5px'/>\
+    <input type='text' id='envvalue' class='form-control' name='value' placeholder='值' style='margin-bottom:5px'/>\
+    <a class='btn btn-default btn-xs' onclick='newEnv()' style='width:100px'>新 增</a>\
+    </form>\
+    </div>"
+
+    for property in dir(data):
+        if not property.startswith("_"):
+            value = getattr(data,property)
+            environments += "<div id='{property}'><label>{property}:</label><input class='form-control' id='envvalue_{property}' style='width:200px' value='{value}'> <a href='javascript:;' class='pull-right' onclick='delEnv(\"{property}\")' style='margin-left:10px'>删除</a><a href='javascript:;' onclick='saveEnv(\"{property}\")' class='pull-right'>保存</a><br></div>".format(property=property,value=value)
+
+    return environments
+
+@url.route("/newenv",methods=["POST"])
+def newEnv():
+    result = {"result":True,"data":"<div id='{property}'><label>{property}:</label><input class='form-control' id='envvalue_{property}' style='width:200px' value='{value}'><br><a href='javascript:;' class='pull-right' onclick='delEnv(\"{property}\")' style='margin-left:10px'>删除</a><a href='javascript:;' onclick='saveEnv(\"{property}\")' class='pull-right'>保存</a><br></div>","errorMsg":None}
+    name = request.form.get("name")
+    value = request.form.get("value")
+    try:
+        if getenv(name,current_user):
+            result = {"result":False,"errorMsg":"环境变量已存在"}
+        else:
+            setenv(name,value,current_user)
+            result["data"] = result["data"].format(property=name,value=value)
+    except Exception as e:
+        result = {"result":False,"errorMsg":str(e)}
+    finally:
+        return jsonify(result)
+
+@url.route("/saveenv",methods=["POST"])
+def saveEnv():
+    result = {"result":True,"errorMsg":None}
+    name = request.form.get("name")
+    value = request.form.get("value")
+
+    try:
+        if getenv(name,current_user):
+            if not setenv(name,value,current_user):
+                result = {"result":False,"errorMsg":"保存失败"}
+
+        else:
+            result = {"result":False,"errorMsg":"不存在该环境变量:'%s'" %name}
+    except Exception as e:
+        result = {"result":False,"errorMsg":str(e)}
+    finally:
+        return jsonify(result)
+
+
+@url.route("/delenv/<property>",methods=["POST"])
+def delEnv(property):
+    result = {"result":True,"errorMsg":None}
+    if delenv(property,current_user):
+        return jsonify(result)
+    else:
+        return jsonify({"result":False,"errorMsg":"删除失败"})

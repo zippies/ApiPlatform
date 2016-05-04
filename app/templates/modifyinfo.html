@@ -44,17 +44,17 @@
 	<div class="col-lg-8" id="frame">
 		<form action="/modifyinfo" method="post">
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require">*</span>&nbsp昵&nbsp&nbsp&nbsp&nbsp称:</span>
+				<span class="input-group-addon"><span class="require">*</span>&nbsp昵&nbsp&nbsp称:</span>
 				<input type="text" name="nickname" value="{{ current_user.nickname }}" class="form-control">
 			</div>
 
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require"></span>&nbsp邮&nbsp&nbsp&nbsp&nbsp箱:</span>
+				<span class="input-group-addon"><span class="require"></span>&nbsp邮&nbsp&nbsp箱:</span>
 				<input type="email" name="email" value="{{ current_user.email }}" class="form-control" oninvalid="setCustomValidity('T T 邮箱格式不正确');">
 			</div>
 
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require"></span>&nbsp性&nbsp&nbsp&nbsp&nbsp别:</span>
+				<span class="input-group-addon"><span class="require"></span>&nbsp性&nbsp&nbsp别:</span>
 				<label class="radio-inline">
 					<input type="radio" name="sex" id="sex_1" value="帅哥" {% if current_user.sex == '帅哥' %}checked="checked"{% endif %}> 帅哥
 				</label>
@@ -63,7 +63,7 @@
 				</label>
 			</div>
 			<div class="input-group formitem">
-				<span class="input-group-addon"><span class="require">*</span>&nbsp密&nbsp&nbsp&nbsp&nbsp码:</span>
+				<span class="input-group-addon"><span class="require">*</span>&nbsp密&nbsp&nbsp码:</span>
 				<input type="password" autocomplete="off" placeholder="请输入密码" name="password" class="form-control">
 			</div>
 
