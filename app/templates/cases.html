@@ -68,7 +68,9 @@ data = {}
 [after]
 
 [check]
+#返回状态码等于200
 response.returncode == 200
+#接口返回响应时间小于1秒
 response.elapsed < 1
 </textarea>
             <script>
