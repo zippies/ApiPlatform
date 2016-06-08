@@ -3,7 +3,7 @@ from flask import render_template,request,jsonify,session
 from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.methods import *
 from ..models import db,Api,ApiCase
-from flask.ext.login import login_required,current_user
+from flask_login import login_required,current_user
 from jinja2 import Template
 from . import url
 import json

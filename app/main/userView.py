@@ -2,7 +2,7 @@ from flask import render_template,request,flash,redirect,url_for,jsonify
 from . import url
 from ..models import db,User,message
 from .framework.methods import *
-from flask.ext.login import login_user,logout_user,current_user
+from flask_login import login_user,logout_user,current_user
 from werkzeug.security import generate_password_hash,check_password_hash
 import pickle
 

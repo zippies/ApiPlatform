@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from collections import OrderedDict
-from flask.ext.login import UserMixin
+from flask_login import UserMixin
 from . import db,login_manager
 
 info = {"result":True,"errorMsg":None}
