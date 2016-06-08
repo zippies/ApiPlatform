@@ -51,6 +51,7 @@ def register():
                             )
                 db.session.add(user)
                 db.session.commit()
+                setenv("user",user.nickname,user)
                 message["message"] = "注册成功"
                 flash(message)
                 return redirect(url_for(".login"))
@@ -98,8 +99,11 @@ def modifyInfo():
 
 @url.route("/getenvironment")
 def getEnvironment():
-    data_f = "%s_%s.pkl" %(current_user.id,current_user.nickname)
-    data = pickle.load(open('data/%s' %data_f,'rb'))
+    if not current_user.is_anonymous:
+        data_f = "%s_%s.pkl" %(current_user.id,current_user.nickname)
+        data = pickle.load(open('data/%s' %data_f,'rb'))
+    else:
+        data = None
     environments = "<div  id='newenvdiv' style='border:1px solid #CDCDC1;border-radius:5px;background:#B4EEB4;padding:10px;text-align:center;margin-bottom:10px'>\
     <form id='newenvform'>\
     <input type='text' id='envname' class='form-control' name='name' placeholder='变量名' style='margin-bottom:5px'/>\
