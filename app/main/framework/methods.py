@@ -2,6 +2,8 @@ import random
 import hashlib
 import pickle
 import os
+import pymysql.cursors
+from config import Config
 
 class EnvObj(object):
     def __repr__(self):
@@ -58,5 +60,36 @@ def delenv(key,user):
     else:
         return None
 
-def querySQL():
-    pass
+def execSQL(sql,host=None,user=None,password=None,db=None,port=3306):
+    if not host or not user or not password or not db or not port:
+        host = Config.db_host
+        user = Config.db_user
+        password = Config.db_password
+        db = Config.db_database
+        port = Config.db_port or 3306
+
+    connection = pymysql.connect(
+        host=host,
+        user=user,
+        password=password,
+        db=db,
+        port=port,
+        charset='utf8'
+    )
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            if sql.strip().lower().startswith("select"):
+                result = cursor.fetchall()
+                return result
+            else:
+                return True
+    finally:
+        try:
+            connection.close()
+        except Exception as e:
+            print("close db failed:",e)
+
+if __name__ == "__main__":
+    sql = "select id,student_id,printshop_id,state from wenji_print_order limit 10"
+    execSQL(sql)

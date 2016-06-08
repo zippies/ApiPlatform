@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .framework.main import send_request
 from .framework.methods import *
-from flask_login import current_user,login_required
+from flask.ext.login import current_user,login_required
 from flask import render_template,request,jsonify,abort
 from jinja2 import Template
 from ..models import db,Api
@@ -34,9 +34,9 @@ def stringToJson(data):
 def testapi():
     info = {"result":True,"response":None,"errorMsg":None}
     method = request.form.get("method").lower()
-    url = request.form.get("url")
-    data = request.form.get("data")
-    headers = request.form.get("headers")
+    url = request.form.get("url").strip()
+    data = request.form.get("data").strip()
+    headers = request.form.get("headers").strip()
     data = stringToJson(data)
     headers = stringToJson(headers)
 

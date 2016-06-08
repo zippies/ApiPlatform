@@ -11,6 +11,12 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     log_path = os.path.join(os.path.dirname(__file__),"logs")
 
+    db_host = os.environ.get("DB_HOST")
+    db_user = os.environ.get("DB_USER")
+    db_password = os.environ.get("DB_PASSWORD")
+    db_database = os.environ.get("DB_DATABASE")
+    db_port = os.environ.get("DB_PORT")
+
     @staticmethod
     def init_app(app):
         pass

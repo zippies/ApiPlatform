@@ -3,7 +3,7 @@ from flask import render_template,request,jsonify,session
 from .framework.main import send_request,CheckError,case_template,parseScript
 from .framework.methods import *
 from ..models import db,Api,ApiCase
-from flask_login import login_required,current_user
+from flask.ext.login import login_required,current_user
 from jinja2 import Template
 from . import url
 import json
@@ -11,7 +11,7 @@ import json
 caseitem_template = """
 {% for case,api in case_api %}
 <tr id="caseitem_{{ case.id }}">
-    <td id="casename_{{ case.id }}"><a href='javascript:;' onclick="editcase({{ case.id }})" title="{{case.desc}}">{{ case.name }}</a></td>
+    <td id="casename_{{ case.id }}"><a href='javascript:;' onclick="editcase({{ case.id }})" title="{{ case.api.url }}">{{ case.name }}</a></td>
     <td id="relateapi_{{ case.id }}">{{ api.name }}</td>
     <td>
         <a href="javascript:;" onclick="delcase({{ case.id }})"><span class="glyphicon glyphicon-remove"></span></a>

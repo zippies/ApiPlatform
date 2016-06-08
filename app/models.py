@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from collections import OrderedDict
-from flask_login import UserMixin
+from flask.ext.login import UserMixin
 from . import db,login_manager
 
 info = {"result":True,"errorMsg":None}
@@ -88,6 +88,10 @@ class ApiCase(db.Model):
         self.desc = desc
         self.content = content
         self.userid = userid
+
+    @property
+    def api(self):
+        return Api.query.filter_by(id=self.apiid).first()
 
     def __repr__(self):
         return "<ApiCase:%s belong apiid:%s>" %(self.name,self.apiid)

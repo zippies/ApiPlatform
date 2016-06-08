@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from app import createApp,db
 from app.models import *
-from flask_script import Manager,Shell
-from flask_migrate import Migrate,MigrateCommand
+from flask.ext.script import Manager,Shell
+from flask.ext.migrate import Migrate,MigrateCommand
 from werkzeug.contrib.fixers import ProxyFix
 import os
 

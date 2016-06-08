@@ -2,7 +2,7 @@ from flask import render_template,request,flash,redirect,url_for,jsonify
 from . import url
 from ..models import db,User,message
 from .framework.methods import *
-from flask_login import login_user,logout_user,current_user
+from flask.ext.login import login_user,logout_user,current_user
 from werkzeug.security import generate_password_hash,check_password_hash
 import pickle
 
@@ -100,10 +100,10 @@ def modifyInfo():
 def getEnvironment():
     data_f = "%s_%s.pkl" %(current_user.id,current_user.nickname)
     data = pickle.load(open('data/%s' %data_f,'rb'))
-    environments = "<div  id='newenvdiv' style='border:1px solid #CDCDC1;border-radius:5px;background:#E6E6FA;padding:10px;text-align:center;margin-bottom:10px'>\
+    environments = "<div  id='newenvdiv' style='border:1px solid #CDCDC1;border-radius:5px;background:#B4EEB4;padding:10px;text-align:center;margin-bottom:10px'>\
     <form id='newenvform'>\
     <input type='text' id='envname' class='form-control' name='name' placeholder='变量名' style='margin-bottom:5px'/>\
-    <input type='text' id='envvalue' class='form-control' name='value' placeholder='值' style='margin-bottom:5px'/>\
+    <input type='text' id='envvalue' class='form-control' name='value' placeholder='变量值' style='margin-bottom:5px'/>\
     <a class='btn btn-default btn-xs' onclick='newEnv()' style='width:100px'>新 增</a>\
     </form>\
     </div>"
