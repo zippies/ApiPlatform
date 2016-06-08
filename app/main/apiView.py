@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .framework.main import send_request
 from .framework.methods import *
-from flask.ext.login import current_user,login_required
+from flask_login import current_user,login_required
 from flask import render_template,request,jsonify,abort
 from jinja2 import Template
 from ..models import db,Api
