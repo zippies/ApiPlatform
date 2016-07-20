@@ -1,2 +1,3 @@
 # ApiPlatform
-used for testting api
+used to test restful api via website
+
